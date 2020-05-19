@@ -36,9 +36,6 @@ script:
  - cd plugins/dsl2/fr.lip6.puck.dsl.parent/  && mvn -e generate-sources install && cd -  
  - du -sh plugins/dsl2/fr.lip6.puck.dsl.parent/fr.lip6.puck.dsl.repository/target/repository
 
-# this reporting step does not work currently...
-# - cd edu.cuny.hunter.streamrefactoring.parent && mvn clean verify -Pjacoco coveralls:report && cd -
-
 
 deploy:
   provider: pages
@@ -46,7 +43,6 @@ deploy:
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   local_dir: plugins/dsl2/fr.lip6.puck.dsl.parent/fr.lip6.puck.dsl.repository/target/repository
   on:
-    branch: updatesite
+    branch: master
 
 
- 
