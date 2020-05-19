@@ -1,0 +1,52 @@
+install: true
+
+#language: prolog
+#
+#script :
+#  - swipl
+#  - consult('test2.pro').
+
+jdk:
+ - openjdk8
+
+# due to absence of rt.jar and others, code broken for Java >= 9 
+# - openjdk11
+
+
+language: java
+
+before_script:
+ - echo $JAVA_OPTS
+ - export JAVA_OPTS='-Xms1g -Xmx3g'
+ - echo "MAVEN_OPTS='-Xmx3g'" > ~/.mavenrc
+
+env:
+  global:
+    - MAVEN_OPTS="-Xmx3g"
+
+cache:
+    apt: true
+    directories:
+        - $HOME/.m2
+
+services:
+ - xvfb
+    
+script:
+ - cd plugins/dsl2/fr.lip6.puck.dsl.parent/  && mvn -e generate-sources install && cd -  
+ - du -sh plugins/dsl2/fr.lip6.puck.dsl.parent/fr.lip6.puck.dsl.repository/target/repository
+
+# this reporting step does not work currently...
+# - cd edu.cuny.hunter.streamrefactoring.parent && mvn clean verify -Pjacoco coveralls:report && cd -
+
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  local_dir: plugins/dsl2/fr.lip6.puck.dsl.parent/fr.lip6.puck.dsl.repository/target/repository
+  on:
+    branch: updatesite
+
+
+ 

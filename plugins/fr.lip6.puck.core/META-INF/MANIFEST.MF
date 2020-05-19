@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Puck Core
+Bundle-SymbolicName: fr.lip6.puck.core;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: LIP6
+Automatic-Module-Name: fr.lip6.puck.core
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.emf.common,
+ org.eclipse.xtext,
+ fr.lip6.puck.dsl

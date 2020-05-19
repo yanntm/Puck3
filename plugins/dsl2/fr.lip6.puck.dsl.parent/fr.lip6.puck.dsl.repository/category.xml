@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="fr.lip6.puck.dsl.feature" version="0.0.0">
+      <category name="fr.lip6.puck.dsl.category"/>
+   </feature>
+   <category-def name="fr.lip6.puck.dsl.category" label="Puck"/>
+</site>

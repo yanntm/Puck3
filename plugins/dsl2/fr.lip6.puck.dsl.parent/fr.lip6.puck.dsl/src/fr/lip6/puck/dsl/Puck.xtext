@@ -1,0 +1,40 @@
+grammar fr.lip6.puck.dsl.Puck with org.eclipse.xtext.xbase.Xbase
+
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as jvmTypes
+
+generate puck "http://www.lip6.fr/puck/dsl/Puck"
+
+PuckModel:
+	(imports=XImportSection)?
+	(namedSets+=SetDeclaration)*
+	rules+=Rule*;
+
+Rule:
+	'hide'
+	hide=[SetDeclaration]
+	'from'
+	from=[SetDeclaration]
+	';'
+;
+
+SetDeclaration:
+	name=ID '='  nodes=NodeSet
+	( 'except' except=NodeSet )? ';'	
+;
+
+NodeSet:
+	'[' nodes+=NodeReference (',' nodes+=NodeReference)* ']'
+;
+
+NodeReference:
+	PackageReference | TypeReference  // | FieldReference | MethodReference
+;
+
+TypeReference:
+  'type' type=JvmTypeReference
+;
+
+PackageReference:
+  'pkg' package=QualifiedName
+;
+

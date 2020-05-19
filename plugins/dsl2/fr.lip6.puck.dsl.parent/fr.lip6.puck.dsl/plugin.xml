@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<?eclipse version="3.0"?>
+<plugin>
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<package
+			uri = "http://www.lip6.fr/puck/dsl/Puck"
+			class = "fr.lip6.puck.dsl.puck.PuckPackage"
+			genModel = "model/generated/Puck.genmodel" />
+	</extension>
+</plugin>
