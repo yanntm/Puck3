@@ -138,8 +138,13 @@ public class GraphBuilder extends ASTVisitor {
 	public int findIndex(List<IBinding> nodes, String tname) {
 		int indexDst = -1;
 		for (int i=0; i < nodes.size(); i++) {
-			if (nodes.get(i).getName().equals(tname)) {
-				return i;
+			IBinding elt = nodes.get(i);
+			if (elt instanceof ITypeBinding) {
+				ITypeBinding tb = (ITypeBinding) elt;
+				String id = tb.getQualifiedName(); 
+				if (id.equals(tname)) {
+					return i;
+				}
 			}
 		}
 		return indexDst;
