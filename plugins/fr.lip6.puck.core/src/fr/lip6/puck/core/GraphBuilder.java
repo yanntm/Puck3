@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Stack;
 
@@ -76,6 +78,34 @@ public class GraphBuilder extends ASTVisitor {
 		}
 	}
 	
+	
+	public static void collectPrefix(Set<Integer> safeNodes, MatrixCol graph) {
+		// work with predecessor relationship
+		MatrixCol tgraph = graph.transpose();
+		collectSuffix(safeNodes, tgraph);
+	}
+		
+	public static void collectSuffix(Set<Integer> safeNodes, MatrixCol graph) {
+
+		Set<Integer> seen = new HashSet<>();
+		List<Integer> todo = new ArrayList<>(safeNodes);
+		while (! todo.isEmpty()) {
+			List<Integer> next = new ArrayList<>();
+			seen.addAll(todo);
+			for (int n : todo) {
+				SparseIntArray succ = graph.getColumn(n);
+				for (int i=0; i < succ.size() ; i++) {
+					int index = succ.keyAt(i);
+					if (seen.add(index)) {
+						next.add(index);
+					}
+				}
+			}
+			todo = next;			
+		}
+		safeNodes.addAll(seen);
+	}
+
 	
 	/**
 	 * Owner becomes the current type declaration.
