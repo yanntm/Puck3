@@ -34,16 +34,14 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.fix.AbstractCleanUp;
 import org.eclipse.jdt.ui.cleanup.ICleanUp;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.xtext.resource.XtextResource;
-import org.eclipse.xtext.resource.XtextResourceSet;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 import fr.lip6.move.gal.util.MatrixCol;
-import fr.lip6.puck.dsl.PuckRuntimeModule;
-import fr.lip6.puck.dsl.PuckStandaloneSetup;
+import fr.lip6.puck.dsl.puck.NodeReference;
+import fr.lip6.puck.dsl.puck.PackageReference;
 import fr.lip6.puck.dsl.puck.PuckModel;
+import fr.lip6.puck.dsl.puck.SetDeclaration;
+import fr.lip6.puck.dsl.puck.TypeReference;
 import fr.lip6.puck.dsl.serialization.SerializationUtil;
 
 //@SuppressWarnings("restriction") // yes, AbstractCleanup is kind of internal API to JDT, but for this use case it's fine.
@@ -148,8 +146,26 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 									try {
 										IResource member = proxy.requestResource();
 										String file = member.getLocation().toFile().getCanonicalPath();
-										PuckModel pm  = SerializationUtil.fileToPuckModel(file);
+										PuckModel pm  = SerializationUtil.resourceToPuckModel(member);
 										System.out.println("Found a file " + file + " containing " + pm.getRules().size() + " rules.");
+										for (SetDeclaration set : pm.getNamedSets()){
+											for (NodeReference elt : set.getNodes().getNodes()) {
+												if (elt instanceof TypeReference) {
+													TypeReference tref = (TypeReference) elt;
+													String key = tref.getType().getIdentifier();
+													//IJvm
+													int index = gb.findIndex(gb.getNodes(), tref.getType().getIdentifier());
+													if (index != -1) {
+														System.out.println("found " + key);
+													} else {
+														System.out.println(" not found " + key);
+													}
+												} else if (elt instanceof PackageReference) {
+													PackageReference pkg = (PackageReference) elt;
+													
+												}
+											}
+										}
 									} catch (IOException e) {
 										e.printStackTrace();
 									}

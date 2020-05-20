@@ -129,6 +129,26 @@ public class GraphBuilder extends ASTVisitor {
 	}
 
 	/**
+	 * Find the index of a node or -1 if not found.
+	 * TODO : we should really use a Map<IBinding,Integer> 
+	 * @param nodes the list
+	 * @param tb the object
+	 * @return the index of object in list or -1 if not found.
+	 */
+	public int findIndex(List<IBinding> nodes, String tname) {
+		int indexDst = -1;
+		for (int i=0; i < nodes.size(); i++) {
+			if (nodes.get(i).getName().equals(tname)) {
+				return i;
+			}
+		}
+		return indexDst;
+	}
+
+	public List<IBinding> getNodes() {
+		return nodes;
+	}
+	/**
 	 * Accessor for user : the result of traversing the compilation units.
 	 * @return
 	 */
