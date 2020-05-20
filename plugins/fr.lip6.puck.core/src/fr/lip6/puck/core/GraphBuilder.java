@@ -95,9 +95,9 @@ public class GraphBuilder extends ASTVisitor {
 			for (int n : todo) {
 				SparseIntArray succ = graph.getColumn(n);
 				for (int i=0; i < succ.size() ; i++) {
-					int index = succ.keyAt(i);
-					if (seen.add(index)) {
-						next.add(index);
+					int pre = succ.keyAt(i);
+					if (seen.add(pre)) {
+						next.add(pre);
 					}
 				}
 			}
@@ -281,8 +281,17 @@ public class GraphBuilder extends ASTVisitor {
 		out.close();
 	}
 
-	public void addSetDeclarations(Map<String, List<Integer>> sets) {
-		this.setDeclarations.putAll(sets);
+	public void addSetDeclarations(Map<String, List<Integer>> sets, boolean andChildren) {
+		if (! andChildren) 
+			this.setDeclarations.putAll(sets);
+		else
+		{
+			for (Entry<String, List<Integer>> ent : sets.entrySet()) {
+				Set<Integer> basis = new HashSet<>(ent.getValue());
+				collectSuffix(basis, getComposeGraph());
+				setDeclarations.put(ent.getKey(), new ArrayList<>(basis));
+			}
+		}
 	}
 	
 	
