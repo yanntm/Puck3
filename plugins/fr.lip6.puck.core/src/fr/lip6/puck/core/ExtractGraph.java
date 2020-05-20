@@ -165,7 +165,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 											sets.put(set.getName(), nodes);
 										}
 										System.out.println("Parsed " + sets);
-										gb.addSetDeclarations(sets);
+										gb.addSetDeclarations(sets, true);
 										for (Rule rule : pm.getRules()) {
 											gb.addRule(rule.getHide().getName(), rule.getFrom().getName());
 										}
