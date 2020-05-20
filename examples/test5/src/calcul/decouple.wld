@@ -1,6 +1,6 @@
 import calcul.*
 
-lesMatrices = [ type MatriceCreuse, type MatricePleine] ;
-test = [ type CalculTest , pkg calcul ] ;
+lesMatrices = [ pkg calcul ] except [ type MatriceCreuse, type MatricePleine] ;
+test = [ type CalculTest ] ;
 
 hide lesMatrices from test ;
