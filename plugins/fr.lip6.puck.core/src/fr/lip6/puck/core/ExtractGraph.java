@@ -2,7 +2,9 @@ package fr.lip6.puck.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -40,6 +42,7 @@ import fr.lip6.move.gal.util.MatrixCol;
 import fr.lip6.puck.dsl.puck.NodeReference;
 import fr.lip6.puck.dsl.puck.PackageReference;
 import fr.lip6.puck.dsl.puck.PuckModel;
+import fr.lip6.puck.dsl.puck.Rule;
 import fr.lip6.puck.dsl.puck.SetDeclaration;
 import fr.lip6.puck.dsl.puck.TypeReference;
 import fr.lip6.puck.dsl.serialization.SerializationUtil;
@@ -121,15 +124,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		}
 		// let's have a look at it !
 		MatrixCol useGraph = gb.getUseGraph();
-		System.out.println(useGraph);
-		
-		// let's build a graphviz file for it
-		try {
-			gb.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		System.out.println(useGraph);		
 		
 		for (IPackageFragmentRoot fragment : project.getAllPackageFragmentRoots()) {
 			if (fragment.getKind() == IPackageFragmentRoot.K_SOURCE) {
@@ -148,7 +143,9 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 										String file = member.getLocation().toFile().getCanonicalPath();
 										PuckModel pm  = SerializationUtil.resourceToPuckModel(member);
 										System.out.println("Found a file " + file + " containing " + pm.getRules().size() + " rules.");
+										Map<String,List<Integer>> sets = new HashMap<>();
 										for (SetDeclaration set : pm.getNamedSets()){
+											List<Integer> nodes = new ArrayList<>();
 											for (NodeReference elt : set.getNodes().getNodes()) {
 												if (elt instanceof TypeReference) {
 													TypeReference tref = (TypeReference) elt;
@@ -156,7 +153,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 													//IJvm
 													int index = gb.findIndex(gb.getNodes(), tref.getType().getIdentifier());
 													if (index != -1) {
-														System.out.println("found " + key);
+														nodes.add(index);
 													} else {
 														System.out.println(" not found " + key);
 													}
@@ -165,6 +162,12 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 													
 												}
 											}
+											sets.put(set.getName(), nodes);
+										}
+										System.out.println("Parsed " + sets);
+										gb.addSetDeclarations(sets);
+										for (Rule rule : pm.getRules()) {
+											gb.addRule(rule.getHide().getName(), rule.getFrom().getName());
 										}
 									} catch (IOException e) {
 										e.printStackTrace();
@@ -177,6 +180,14 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 				}
 			}
 		}
+		
+		// let's build a graphviz file for it
+		try {
+			gb.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		
 		return new RefactoringStatus();
 	}

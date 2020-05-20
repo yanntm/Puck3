@@ -3,7 +3,11 @@ package fr.lip6.puck.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -30,6 +34,9 @@ public class GraphBuilder extends ASTVisitor {
 	private List<IVariableBinding> attributes;
 	private MatrixCol useGraph;
 	private Stack<Integer> currentOwner = new Stack<>();
+	private MatrixCol composeGraph = null;
+	private Map<String,List<Integer>> setDeclarations = new HashMap<String, List<Integer>>();
+	private List<Rule> rules = new ArrayList<>();
 
 	public GraphBuilder(List<IBinding> nodes, List<IPackageBinding> packages, List<ITypeBinding> types,
 			List<IMethodBinding> methods, List<IVariableBinding> attributes) {
@@ -159,7 +166,33 @@ public class GraphBuilder extends ASTVisitor {
 	 */
 	public MatrixCol getUseGraph() {
 		return useGraph;
-	}										
+	}
+	
+	/**
+	 * Accessor for user : the result of traversing the compilation units.
+	 * @return
+	 */
+	public MatrixCol getComposeGraph() {
+		if (composeGraph == null) {
+			composeGraph = new MatrixCol(nodes.size(), nodes.size());
+			// containment edges
+			for (IMethodBinding meth: methods) {
+				int elt = findIndex(nodes, meth);
+				int parent = findIndex(nodes, meth.getDeclaringClass());
+				if (elt >= 0 && parent >= 0) {
+					composeGraph.set(elt, parent, 1);
+				}
+			}
+			for (IVariableBinding meth: attributes) {
+				int elt = findIndex(nodes, meth);
+				int parent = findIndex(nodes, meth.getDeclaringClass());
+				if (elt >= 0 && parent >= 0) {
+					composeGraph.set(elt, parent, 1);
+				}
+			}
+		}
+		return composeGraph;
+	}
 
 	/**
 	 * A visual representation for our graphs.
@@ -183,6 +216,8 @@ public class GraphBuilder extends ASTVisitor {
 			}
 			index++;
 		}
+		
+		// usage edges
 		for (int coli=0,colie=useGraph.getColumnCount(); coli<colie;coli++ ) {
 			SparseIntArray col = useGraph.getColumn(coli);
 			for (int i=0,ie=col.size();i<ie;i++) {
@@ -190,24 +225,47 @@ public class GraphBuilder extends ASTVisitor {
 				out.println("  n"+coli+ " -> n" + colj + " ;");
 			}
 		}
-		// containment edges
-		for (IMethodBinding meth: methods) {
-			int indexDst = findIndex(nodes, meth);
-			int indexSrc = findIndex(nodes, meth.getDeclaringClass());
-			if (indexDst >= 0 && indexSrc >= 0) {
-				out.println("  n"+indexSrc+ " -> n" + indexDst + " [style=dotted] ;");
+		
+		// containment edges 
+		for (int coli=0,colie=getComposeGraph().getColumnCount(); coli<colie;coli++ ) {
+			SparseIntArray col = getComposeGraph().getColumn(coli);
+			for (int i=0,ie=col.size();i<ie;i++) {
+				int colj = col.keyAt(i);
+				out.println("  n"+coli+ " -> n" + colj + " [style=dotted] ;");
 			}
 		}
-		for (IVariableBinding meth: attributes) {
-			int indexDst = findIndex(nodes, meth);
-			int indexSrc = findIndex(nodes, meth.getDeclaringClass());
-			if (indexDst >= 0 && indexSrc >= 0) {
-				out.println("  n"+indexSrc+ " -> n" + indexDst + " [style=dotted] ;");
+		
+		// named sets
+		for (Entry<String, List<Integer>> ent : setDeclarations.entrySet()) {
+			out.println("  "+ent.getKey()+ " [color=blue] ;");
+			for (Integer i : ent.getValue()) {
+				out.println("  "+ent.getKey()+ " -> n" + i + " [color=blue] ;");				
 			}
+		}
+		
+		for (Rule rule : rules) {
+			out.println("  "+rule.hide+ " -> " + rule.from + " [color=red] ;");							
 		}
 
 		out.println("}");
 		out.close();
+	}
+
+	public void addSetDeclarations(Map<String, List<Integer>> sets) {
+		this.setDeclarations.putAll(sets);
+	}
+	
+	
+	private static class Rule {
+		public final String hide;
+		public final String from;
+		public Rule(String hide, String from) {
+			this.hide = hide;
+			this.from = from;
+		}
+	}
+	public void addRule (String hide, String from) {
+		this.rules .add (new Rule(hide,from));
 	}
 
 }
