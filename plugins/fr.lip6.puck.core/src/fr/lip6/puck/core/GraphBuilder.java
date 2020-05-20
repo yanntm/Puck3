@@ -204,6 +204,14 @@ public class GraphBuilder extends ASTVisitor {
 	 */
 	public MatrixCol getComposeGraph() {
 		if (composeGraph == null) {
+			packages.clear();
+			for (ITypeBinding type : types) {
+				IPackageBinding pkg = type.getPackage();
+				if (!packages.contains(pkg)) {
+					packages.add(pkg);
+					nodes.add(pkg);
+				}
+			}
 			composeGraph = new MatrixCol(nodes.size(), nodes.size());
 			// containment edges
 			for (IMethodBinding meth: methods) {
@@ -220,6 +228,13 @@ public class GraphBuilder extends ASTVisitor {
 					composeGraph.set(elt, parent, 1);
 				}
 			}
+			for (ITypeBinding type : types) {
+				int elt = findIndex(nodes, type);
+				int parent = findIndex(nodes, type.getPackage());
+				if (elt >= 0 && parent >= 0) {
+					composeGraph.set(elt, parent, 1);
+				}
+			}
 		}
 		return composeGraph;
 	}
@@ -230,6 +245,7 @@ public class GraphBuilder extends ASTVisitor {
 	 * @throws IOException if we couldn't write to that place.
 	 */
 	public void exportDot (String path) throws IOException {
+		getComposeGraph();
 		PrintWriter out = new PrintWriter(new File(path));
 		out.println("digraph  G {");
 		int index = 0;
@@ -239,10 +255,13 @@ public class GraphBuilder extends ASTVisitor {
 				out.println("  n"+index+ " [shape=box,label=\""+tb.getQualifiedName()+"\"]");
 			} else if (elt instanceof IVariableBinding) {
 				IVariableBinding vb = (IVariableBinding) elt;
-				out.println("  n"+index+ " [shape=diamond,label=\"" + vb.getDeclaringClass().getQualifiedName()+"."+vb.getName()+"\"];");
+				out.println("  n"+index+ " [shape=doubleellipse,label=\"" + vb.getDeclaringClass().getQualifiedName()+"."+vb.getName()+"\"];");
 			} else if (elt instanceof IMethodBinding) {
 				IMethodBinding mb = (IMethodBinding) elt;
-				out.println("  n"+index+ " [shape=ellipse,label=\"" + mb.getDeclaringClass().getQualifiedName()+"."+mb.getName()+"\"];");
+				out.println("  n"+index+ " [shape=octagon,label=\"" + mb.getDeclaringClass().getQualifiedName()+"."+mb.getName()+"\"];");
+			} else if (elt instanceof IPackageBinding) {
+				IPackageBinding pkg = (IPackageBinding) elt;
+				out.println("  n"+index+ " [shape=folder,label=\"" + pkg.getName() +"\"];");				
 			}
 			index++;
 		}
