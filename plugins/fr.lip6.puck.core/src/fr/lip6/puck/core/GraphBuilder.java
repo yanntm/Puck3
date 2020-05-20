@@ -308,6 +308,8 @@ public class GraphBuilder extends ASTVisitor {
 				Set<Integer> from = new HashSet<>(setDeclarations.get(rule.from));
 				Set<Integer> hide = new HashSet<>(setDeclarations.get(rule.hide));
 				
+				from.removeAll(hide);
+				
 				for (Integer interloper : from) {
 					for (Integer secret : hide) {
 						if (useGraph.get(secret, interloper) != 0 || composeGraph.get(secret, interloper) != 0) {
