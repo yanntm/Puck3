@@ -356,7 +356,9 @@ public class GraphBuilder extends ASTVisitor {
 								IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker(IMarker.PROBLEM);
 								marker.setAttribute(IMarker.CHAR_START, reason.getStartPosition());
 								marker.setAttribute(IMarker.CHAR_END, reason.getStartPosition() + reason.getLength());
-								marker.setAttribute(IMarker.MESSAGE, "Violates Puck rule.");
+								marker.setAttribute(IMarker.MESSAGE, "Violates Puck rule : hide " + rule.hide + " from " + rule.from);
+								marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
+								marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 							}
 						}
 					}
