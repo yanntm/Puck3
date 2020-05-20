@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,12 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.Stack;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -22,6 +27,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
@@ -60,21 +66,28 @@ public class GraphBuilder extends ASTVisitor {
 		if (node instanceof Name) {
 			Name name = (Name) node;
 			IBinding b = name.resolveBinding();
-			addDependency(b);
+			addDependency(b,node);
 		}
 		super.preVisit(node);
 	}	
 
+	private Map<Integer,Map<Integer,List<ASTNode>>> reasons = new HashMap<>();
+	
+	public Map<Integer, Map<Integer, List<ASTNode>>> getReasons() {
+		return reasons;
+	}
 	/**
 	 * Add a dependency from top of curentOwner stack (if any) to the node referred to in the binding (if any).
 	 * @param tb A @see {@link IBinding} resolved name that might point to a node of the graph.
+	 * @param node 
 	 */
-	private void addDependency(IBinding tb) {
+	private void addDependency(IBinding tb, ASTNode node) {
 		if (!currentOwner.isEmpty()) {
 			int indexSrc = currentOwner.peek();
 			int indexDst = findIndex(nodes, tb);
 			if (indexDst != indexSrc && indexDst >= 0 && indexSrc >= 0) {
 				useGraph.set(indexDst, indexSrc, 1);
+				reasons.computeIfAbsent(indexDst, k -> new HashMap<>()).computeIfAbsent(indexSrc, k -> new ArrayList<>()).add(node);
 			}
 		}
 	}
@@ -324,6 +337,35 @@ public class GraphBuilder extends ASTVisitor {
 		out.close();
 	}
 
+	public void addErrorMarkers() throws JavaModelException, CoreException {
+		getComposeGraph();
+		for (Rule rule : rules) {
+			Set<Integer> from = new HashSet<>(setDeclarations.get(rule.from));
+			Set<Integer> hide = new HashSet<>(setDeclarations.get(rule.hide));
+			
+			from.removeAll(hide);
+			
+			for (Integer interloper : from) {
+				for (Integer secret : hide) {
+					if (useGraph.get(secret, interloper) != 0) {
+						List<ASTNode> explains = reasons.getOrDefault(secret, Collections.emptyMap()).getOrDefault(interloper, Collections.emptyList());
+						for (ASTNode reason : explains) {
+							ASTNode root = reason.getRoot();
+							if (root.getNodeType() == ASTNode.COMPILATION_UNIT) {
+								CompilationUnit cu = (CompilationUnit) root;
+								IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker(IMarker.PROBLEM);
+								marker.setAttribute(IMarker.CHAR_START, reason.getStartPosition());
+								marker.setAttribute(IMarker.CHAR_END, reason.getStartPosition() + reason.getLength());
+								marker.setAttribute(IMarker.MESSAGE, "Violates Puck rule.");
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+	
 	public void addSetDeclarations(Map<String, Set<Integer>> sets, Map<String, Set<Integer>> except, boolean andChildren) {
 		for (Entry<String, Set<Integer>> ent : sets.entrySet()) {
 			Set<Integer> basis = new HashSet<>(ent.getValue());
@@ -343,6 +385,76 @@ public class GraphBuilder extends ASTVisitor {
 	}
 	
 	
+	public static GraphBuilder collectGraph(List<CompilationUnit> parsedCu) {
+		// this holds the actual nodes, at their proper index. All nodes are here, this is the union of types+methods+attributes.
+		// packages are currently excluded from this list.
+		List<IBinding> nodes = new ArrayList<>();
+
+		// these separate lists of nodes by subtype also benefit from tighter type constraints, for refined analysis/use.
+		// they form a partion of nodes + packages.
+		List<IPackageBinding> packages = new ArrayList<>();
+		List<ITypeBinding> types = new ArrayList<>();
+		List<IMethodBinding> methods = new ArrayList<>();
+		List<IVariableBinding> attributes = new ArrayList<>();
+		
+		
+		// actual traversal to find all relevant nodes we will consider within the scope of our graph. 
+		for (CompilationUnit unit : parsedCu) {
+
+			unit.accept(new ASTVisitor() {
+				/**
+				 * Deal with TypeDeclaration : classes + interfaces : add nodes for them, their methods, their attributes.
+				 *  
+				 */
+				@Override
+				public void endVisit(TypeDeclaration node) {
+					ITypeBinding itb = node.resolveBinding();
+					nodes.add(itb);
+					types.add(itb);
+					for (MethodDeclaration meth : node.getMethods()) {
+						IMethodBinding mtb = meth.resolveBinding();
+						nodes.add(mtb);
+						methods.add(mtb);
+					}
+
+					for (FieldDeclaration att : node.getFields()) {
+						for (Object toc : att.fragments()) {
+							VariableDeclarationFragment vdf = (VariableDeclarationFragment) toc;
+							IVariableBinding ivb = vdf.resolveBinding();
+							nodes.add(ivb);
+							attributes.add(ivb);
+						}
+					}
+					super.endVisit(node);
+				}
+
+				/**
+				 * Currently separately collecting package nodes. They are actually unused currently. 
+				 */
+				@Override
+				public void endVisit(PackageDeclaration node) {
+					IPackageBinding ipb = node.resolveBinding();
+					if (! packages.contains(ipb))
+						packages.add(ipb);
+					super.endVisit(node);
+				}				
+			});
+		}
+		
+		System.out.println("Found " + nodes.size() + " nodes : " + printNodes(nodes));
+		
+		// Now the graph builder; because it is stateful (it keeps track of which node is current owner) it is implemented as a separate Visitor class.
+		// Let's give it the context we have collected.
+		GraphBuilder gb = new GraphBuilder(nodes,packages,types,methods,attributes);
+		
+		// now build the graph dependency links.
+		for (CompilationUnit unit : parsedCu) {
+			unit.accept(gb);
+		}
+		return gb;
+	}
+
+	
 	private static class Rule {
 		public final String hide;
 		public final String from;
@@ -354,5 +466,37 @@ public class GraphBuilder extends ASTVisitor {
 	public void addRule (String hide, String from) {
 		this.rules .add (new Rule(hide,from));
 	}
+
+	
+	/**
+	 * Debug method used for printing graph in console mode.
+	 * @param nodes the list of nodes we built
+	 * @return a nice-ish String representation for these nodes.
+	 */
+	public static String printNodes(List<? extends IBinding> nodes) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (IBinding b : nodes) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			if (b instanceof ITypeBinding) {
+				ITypeBinding tb = (ITypeBinding) b;
+				sb.append("TYPE:"+tb.getQualifiedName());				
+			} else if (b instanceof IMethodBinding) {
+				IMethodBinding mb = (IMethodBinding) b;
+				sb.append("METHOD:"+mb.getDeclaringClass().getQualifiedName()+ "::"  +mb);				
+			} else if (b instanceof IPackageBinding) {
+				IPackageBinding pb = (IPackageBinding) b;
+				sb.append("PACKAGE:"+pb.getName());
+			} else if (b instanceof IVariableBinding) {
+				IVariableBinding vb = (IVariableBinding) b;
+				sb.append("FIELD:"+vb.getDeclaringClass().getQualifiedName()+ "::"  +vb);
+			}
+		}
+		return sb.toString();		
+	}	
 
 }

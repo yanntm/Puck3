@@ -10,5 +10,16 @@
             id="fr.lip6.puck.core.ExtractGraph">
       </cleanUp>
    </extension>
+   <extension
+         id="fr.lip6.puck.validator"
+         name="fr.lip6.puck.validator"
+         point="org.eclipse.jdt.core.compilationParticipant">
+      <compilationParticipant
+            class="fr.lip6.puck.core.ui.RuleValidator"
+            createsProblems="true"
+            id="fr.lip6.puck.core.compilationParticipant1"
+            modifiesEnvironment="false">
+      </compilationParticipant>
+   </extension>
 
 </plugin>

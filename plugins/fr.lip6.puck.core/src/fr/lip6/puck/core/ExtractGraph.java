@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTRequestor;
@@ -61,74 +62,26 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		
 		// first traversal : grab packages, types, method declarations, attribute declarations
 		
-		// this holds the actual nodes, at their proper index. All nodes are here, this is the union of types+methods+attributes.
-		// packages are currently excluded from this list.
-		List<IBinding> nodes = new ArrayList<>();
-
-		// these separate lists of nodes by subtype also benefit from tighter type constraints, for refined analysis/use.
-		// they form a partion of nodes + packages.
-		List<IPackageBinding> packages = new ArrayList<>();
-		List<ITypeBinding> types = new ArrayList<>();
-		List<IMethodBinding> methods = new ArrayList<>();
-		List<IVariableBinding> attributes = new ArrayList<>();
+		GraphBuilder gb = GraphBuilder.collectGraph(parsedCu);
 		
-		
-		// actual traversal to find all relevant nodes we will consider within the scope of our graph. 
-		for (CompilationUnit unit : parsedCu) {
-
-			unit.accept(new ASTVisitor() {
-				/**
-				 * Deal with TypeDeclaration : classes + interfaces : add nodes for them, their methods, their attributes.
-				 *  
-				 */
-				@Override
-				public void endVisit(TypeDeclaration node) {
-					ITypeBinding itb = node.resolveBinding();
-					nodes.add(itb);
-					types.add(itb);
-					for (MethodDeclaration meth : node.getMethods()) {
-						IMethodBinding mtb = meth.resolveBinding();
-						nodes.add(mtb);
-						methods.add(mtb);
-					}
-
-					for (FieldDeclaration att : node.getFields()) {
-						for (Object toc : att.fragments()) {
-							VariableDeclarationFragment vdf = (VariableDeclarationFragment) toc;
-							IVariableBinding ivb = vdf.resolveBinding();
-							nodes.add(ivb);
-							attributes.add(ivb);
-						}
-					}
-					super.endVisit(node);
-				}
-
-				/**
-				 * Currently separately collecting package nodes. They are actually unused currently. 
-				 */
-				@Override
-				public void endVisit(PackageDeclaration node) {
-					IPackageBinding ipb = node.resolveBinding();
-					if (! packages.contains(ipb))
-						packages.add(ipb);
-					super.endVisit(node);
-				}				
-			});
-		}
-		
-		System.out.println("Found " + nodes.size() + " nodes : " + printNodes(nodes));
-		
-		// Now the graph builder; because it is stateful (it keeps track of which node is current owner) it is implemented as a separate Visitor class.
-		// Let's give it the context we have collected.
-		GraphBuilder gb = new GraphBuilder(nodes,packages,types,methods,attributes);
-		// now build the graph dependency links.
-		for (CompilationUnit unit : parsedCu) {
-			unit.accept(gb);
-		}
 		// let's have a look at it !
 		MatrixCol useGraph = gb.getUseGraph();
 		System.out.println(useGraph);		
 		
+		collectRules(project, gb);
+		
+		// let's build a graphviz file for it
+		try {
+			gb.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		
+		return new RefactoringStatus();
+	}
+
+	public static void collectRules(IJavaProject project, GraphBuilder gb) throws JavaModelException, CoreException {
 		for (IPackageFragmentRoot fragment : project.getAllPackageFragmentRoots()) {
 			if (fragment.getKind() == IPackageFragmentRoot.K_SOURCE) {
 				IResource res = fragment.getCorrespondingResource();
@@ -203,18 +156,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 				}
 			}
 		}
-		
-		// let's build a graphviz file for it
-		try {
-			gb.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		
-		return new RefactoringStatus();
 	}
-
 
 	/**
 	 * Go for a full parse+load into memory, with Binding resolution activated for the set of sources.
@@ -226,7 +168,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 	 * @param monitor a progress monitor, just forwarded to the parser.
 	 * @return a set of fully resolved and parsed JDT DOM style document model for Java AST. We can use "node.resolveBinding()" in the resulting CompilationUnit.
 	 */
-	public List<CompilationUnit> parseSources(IJavaProject project, ICompilationUnit[] compilationUnits, IProgressMonitor monitor) {
+	public static List<CompilationUnit> parseSources(IJavaProject project, ICompilationUnit[] compilationUnits, IProgressMonitor monitor) {
 		
 		// Java 8 setting by default, but this setting is overruled by setProject below so irrelevant anyway.
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
@@ -248,34 +190,4 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		return parsedCu;
 	}
 
-	/**
-	 * Debug method used for printing graph in console mode.
-	 * @param nodes the list of nodes we built
-	 * @return a nice-ish String representation for these nodes.
-	 */
-	private String printNodes(List<IBinding> nodes) {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (IBinding b : nodes) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			if (b instanceof ITypeBinding) {
-				ITypeBinding tb = (ITypeBinding) b;
-				sb.append("TYPE:"+tb.getQualifiedName());				
-			} else if (b instanceof IMethodBinding) {
-				IMethodBinding mb = (IMethodBinding) b;
-				sb.append("METHOD:"+mb.getDeclaringClass().getQualifiedName()+ "::"  +mb);				
-			} else if (b instanceof IPackageBinding) {
-				IPackageBinding pb = (IPackageBinding) b;
-				sb.append("PACKAGE:"+pb.getName());
-			} else if (b instanceof IVariableBinding) {
-				IVariableBinding vb = (IVariableBinding) b;
-				sb.append("FIELD:"+vb.getDeclaringClass().getQualifiedName()+ "::"  +vb);
-			}
-		}
-		return sb.toString();		
-	}	
 }
