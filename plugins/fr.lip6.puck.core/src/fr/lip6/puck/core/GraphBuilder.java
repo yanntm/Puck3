@@ -37,7 +37,7 @@ public class GraphBuilder extends ASTVisitor {
 	private MatrixCol useGraph;
 	private Stack<Integer> currentOwner = new Stack<>();
 	private MatrixCol composeGraph = null;
-	private Map<String,List<Integer>> setDeclarations = new HashMap<String, List<Integer>>();
+	private Map<String,Set<Integer>> setDeclarations = new HashMap<>();
 	private List<Rule> rules = new ArrayList<>();
 
 	public GraphBuilder(List<IBinding> nodes, List<IPackageBinding> packages, List<ITypeBinding> types,
@@ -291,7 +291,7 @@ public class GraphBuilder extends ASTVisitor {
 		}
 		
 		// named sets
-		for (Entry<String, List<Integer>> ent : setDeclarations.entrySet()) {
+		for (Entry<String, Set<Integer>> ent : setDeclarations.entrySet()) {
 			out.println("  "+ent.getKey()+ " [color=blue] ;");
 			for (Integer i : ent.getValue()) {
 				out.println("  "+ent.getKey()+ " -> n" + i + " [color=blue] ;");				
@@ -306,16 +306,21 @@ public class GraphBuilder extends ASTVisitor {
 		out.close();
 	}
 
-	public void addSetDeclarations(Map<String, List<Integer>> sets, boolean andChildren) {
-		if (! andChildren) 
-			this.setDeclarations.putAll(sets);
-		else
-		{
-			for (Entry<String, List<Integer>> ent : sets.entrySet()) {
-				Set<Integer> basis = new HashSet<>(ent.getValue());
+	public void addSetDeclarations(Map<String, Set<Integer>> sets, Map<String, Set<Integer>> except, boolean andChildren) {
+		for (Entry<String, Set<Integer>> ent : sets.entrySet()) {
+			Set<Integer> basis = new HashSet<>(ent.getValue());
+			if (andChildren) {
 				collectSuffix(basis, getComposeGraph());
-				setDeclarations.put(ent.getKey(), new ArrayList<>(basis));
+				Set<Integer> ex = except.get(ent.getKey());
+				if (ex != null) {
+					ex = new HashSet<> (ex);
+					if (andChildren) {
+						collectSuffix(ex, getComposeGraph());						
+					}
+					basis.removeAll(ex);
+				}
 			}
+			setDeclarations.put(ent.getKey(), basis);
 		}
 	}
 	

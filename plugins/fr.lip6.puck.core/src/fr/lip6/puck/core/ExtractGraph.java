@@ -3,8 +3,10 @@ package fr.lip6.puck.core;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -40,6 +42,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import fr.lip6.move.gal.util.MatrixCol;
 import fr.lip6.puck.dsl.puck.NodeReference;
+import fr.lip6.puck.dsl.puck.NodeSet;
 import fr.lip6.puck.dsl.puck.PackageReference;
 import fr.lip6.puck.dsl.puck.PuckModel;
 import fr.lip6.puck.dsl.puck.Rule;
@@ -143,37 +146,22 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 										String file = member.getLocation().toFile().getCanonicalPath();
 										PuckModel pm  = SerializationUtil.resourceToPuckModel(member);
 										System.out.println("Found a file " + file + " containing " + pm.getRules().size() + " rules.");
-										Map<String,List<Integer>> sets = new HashMap<>();
+										Map<String,Set<Integer>> sets = new HashMap<>();
+										Map<String,Set<Integer>> excepts = new HashMap<>();
 										for (SetDeclaration set : pm.getNamedSets()){
-											List<Integer> nodes = new ArrayList<>();
-											for (NodeReference elt : set.getNodes().getNodes()) {
-												if (elt instanceof TypeReference) {
-													TypeReference tref = (TypeReference) elt;
-													String key = tref.getType().getIdentifier();
-													//IJvm
-													int index = gb.findIndex(gb.getNodes(), key);
-													if (index != -1) {
-														nodes.add(index);
-													} else {
-														System.out.println(" not found " + key);
-													}
-												} else if (elt instanceof PackageReference) {
-													PackageReference pkg = (PackageReference) elt;
-													String key = pkg.getPackage();
-													//IJvm
-													int index = gb.findIndex(gb.getNodes(), key);
-													if (index != -1) {
-														nodes.add(index);
-													} else {
-														System.out.println(" not found " + key);
-													}
-													
-												}
+											Set<Integer> nodes = new HashSet<>();
+											collectSet(gb, set.getNodes(), nodes);
+											
+											if (set.getExcept() != null) {
+												Set<Integer> except =  new HashSet<>();
+												collectSet(gb, set.getExcept(), except);
+												excepts.put(set.getName(), except);
 											}
+											
 											sets.put(set.getName(), nodes);
 										}
 										System.out.println("Parsed " + sets);
-										gb.addSetDeclarations(sets, true);
+										gb.addSetDeclarations(sets, excepts, true);
 										for (Rule rule : pm.getRules()) {
 											gb.addRule(rule.getHide().getName(), rule.getFrom().getName());
 										}
@@ -183,6 +171,33 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 								}
 							}
 							return false;
+						}
+
+						private void collectSet(GraphBuilder gb, NodeSet set, Set<Integer> nodes) {
+							for (NodeReference elt : set.getNodes()) {
+								if (elt instanceof TypeReference) {
+									TypeReference tref = (TypeReference) elt;
+									String key = tref.getType().getIdentifier();
+									//IJvm
+									int index = gb.findIndex(gb.getNodes(), key);
+									if (index != -1) {
+										nodes.add(index);
+									} else {
+										System.out.println(" not found " + key);
+									}
+								} else if (elt instanceof PackageReference) {
+									PackageReference pkg = (PackageReference) elt;
+									String key = pkg.getPackage();
+									//IJvm
+									int index = gb.findIndex(gb.getNodes(), key);
+									if (index != -1) {
+										nodes.add(index);
+									} else {
+										System.out.println(" not found " + key);
+									}
+									
+								}
+							}
 						}
 					}, IResource.DEPTH_INFINITE);
 				}
