@@ -151,7 +151,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 													TypeReference tref = (TypeReference) elt;
 													String key = tref.getType().getIdentifier();
 													//IJvm
-													int index = gb.findIndex(gb.getNodes(), tref.getType().getIdentifier());
+													int index = gb.findIndex(gb.getNodes(), key);
 													if (index != -1) {
 														nodes.add(index);
 													} else {
@@ -159,6 +159,14 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 													}
 												} else if (elt instanceof PackageReference) {
 													PackageReference pkg = (PackageReference) elt;
+													String key = pkg.getPackage();
+													//IJvm
+													int index = gb.findIndex(gb.getNodes(), key);
+													if (index != -1) {
+														nodes.add(index);
+													} else {
+														System.out.println(" not found " + key);
+													}
 													
 												}
 											}

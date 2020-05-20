@@ -47,6 +47,7 @@ public class GraphBuilder extends ASTVisitor {
 		this.types = types;
 		this.methods = methods;
 		this.attributes = attributes;
+		nodes.addAll(packages);
 		this.useGraph = new MatrixCol(nodes.size(), nodes.size());
 	}
 
@@ -182,6 +183,12 @@ public class GraphBuilder extends ASTVisitor {
 				if (id.equals(tname)) {
 					return i;
 				}
+			} else if (elt instanceof IPackageBinding) {
+				IPackageBinding pkg = (IPackageBinding) elt;
+				String id = pkg.getName(); 
+				if (id.equals(tname)) {
+					return i;
+				}
 			}
 		}
 		return indexDst;
@@ -204,7 +211,6 @@ public class GraphBuilder extends ASTVisitor {
 	 */
 	public MatrixCol getComposeGraph() {
 		if (composeGraph == null) {
-			packages.clear();
 			for (ITypeBinding type : types) {
 				IPackageBinding pkg = type.getPackage();
 				if (!packages.contains(pkg)) {
