@@ -8,6 +8,12 @@ PuckModel:
 	(imports=XImportSection)?
 	(namedSets+=SetDeclaration)*
 	rules+=Rule*;
+//	statements+=Statement*;
+
+
+RuleSet :
+	SetDeclaration | IteratorDef
+;
 
 Rule:
 	'hide'
@@ -15,6 +21,36 @@ Rule:
 	'from'
 	from=[SetDeclaration]
 	';'
+;
+
+
+RuleWithSet:
+	'hide'
+	hide=[RuleSet]
+	'from'
+	from=[RuleSet]
+	';'
+;
+
+Statement : 
+	ForLoop | RuleWithSet | Filter
+;
+
+Filter : 
+	'if' '(' test=XExpression ')' '{'
+		body+=Statement*
+	'}'
+;
+
+IteratorDef : 
+	name=ID
+;
+
+ForLoop: 
+	'for' '(' iter=IteratorDef ':' set=[SetDeclaration] ')'
+	'{' 
+		(body+=Statement)* 
+	'}'	
 ;
 
 SetDeclaration:
