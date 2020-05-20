@@ -290,16 +290,32 @@ public class GraphBuilder extends ASTVisitor {
 			}
 		}
 		
-		// named sets
-		for (Entry<String, Set<Integer>> ent : setDeclarations.entrySet()) {
-			out.println("  "+ent.getKey()+ " [color=blue] ;");
-			for (Integer i : ent.getValue()) {
-				out.println("  "+ent.getKey()+ " -> n" + i + " [color=blue] ;");				
+		boolean doRedArcs=true;
+		if (! doRedArcs) {
+			// named sets
+			for (Entry<String, Set<Integer>> ent : setDeclarations.entrySet()) {
+				out.println("  "+ent.getKey()+ " [color=blue] ;");
+				for (Integer i : ent.getValue()) {
+					out.println("  "+ent.getKey()+ " -> n" + i + " [color=blue] ;");				
+				}
 			}
-		}
-		
-		for (Rule rule : rules) {
-			out.println("  "+rule.hide+ " -> " + rule.from + " [color=red] ;");							
+
+			for (Rule rule : rules) {
+				out.println("  "+rule.hide+ " -> " + rule.from + " [color=red] ;");							
+			}
+		} else {
+			for (Rule rule : rules) {
+				Set<Integer> from = new HashSet<>(setDeclarations.get(rule.from));
+				Set<Integer> hide = new HashSet<>(setDeclarations.get(rule.hide));
+				
+				for (Integer interloper : from) {
+					for (Integer secret : hide) {
+						if (useGraph.get(secret, interloper) != 0 || composeGraph.get(secret, interloper) != 0) {
+							out.println("  n"+interloper+ " -> n" + secret + " [color=red] ;");														
+						}
+					}
+				}
+			}
 		}
 
 		out.println("}");
