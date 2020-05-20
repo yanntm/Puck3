@@ -4,7 +4,7 @@
 package fr.lip6.puck.dsl.tests
 
 import com.google.inject.Inject
-import fr.lip6.puck.dsl.puck.Model
+import fr.lip6.puck.dsl.puck.PuckModel
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.^extension.ExtendWith
 @InjectWith(PuckInjectorProvider)
 class PuckParsingTest {
 	@Inject
-	ParseHelper<Model> parseHelper
+	ParseHelper<PuckModel> parseHelper
 	
 	@Test
 	def void loadModel() {
