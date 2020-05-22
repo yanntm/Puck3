@@ -368,22 +368,12 @@ public class GraphBuilder extends ASTVisitor {
 
 	}
 	
-	public void addSetDeclarations(Map<String, Set<Integer>> sets, Map<String, Set<Integer>> except, boolean andChildren) {
-		for (Entry<String, Set<Integer>> ent : sets.entrySet()) {
-			Set<Integer> basis = new HashSet<>(ent.getValue());
-			if (andChildren) {
-				collectSuffix(basis, getComposeGraph());
-				Set<Integer> ex = except.get(ent.getKey());
-				if (ex != null) {
-					ex = new HashSet<> (ex);
-					if (andChildren) {
-						collectSuffix(ex, getComposeGraph());						
-					}
-					basis.removeAll(ex);
-				}
-			}
-			setDeclarations.put(ent.getKey(), basis);
-		}
+	public void addSetDeclaration(String name, Set<Integer> nodes) {
+		setDeclarations.put(name, nodes);
+	}
+	
+	public Set<Integer> getSetDeclaration (String name) {
+		return setDeclarations.getOrDefault(name, Collections.emptySet());
 	}
 	
 	

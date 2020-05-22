@@ -49,6 +49,7 @@ import fr.lip6.puck.dsl.puck.PackageReference;
 import fr.lip6.puck.dsl.puck.PuckModel;
 import fr.lip6.puck.dsl.puck.Rule;
 import fr.lip6.puck.dsl.puck.SetDeclaration;
+import fr.lip6.puck.dsl.puck.SetReference;
 import fr.lip6.puck.dsl.puck.TypeReference;
 import fr.lip6.puck.dsl.serialization.SerializationUtil;
 
@@ -109,13 +110,11 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 											if (set.getExcept() != null) {
 												Set<Integer> except =  new HashSet<>();
 												collectSet(gb, set.getExcept(), except);
-												excepts.put(set.getName(), except);
+												nodes.removeAll(except);
 											}
-											
-											sets.put(set.getName(), nodes);
+											gb.addSetDeclaration(set.getName(), nodes);
 										}
 										System.out.println("Parsed " + sets);
-										gb.addSetDeclarations(sets, excepts, true);
 										for (Rule rule : pm.getRules()) {
 											gb.addRule(rule.getHide().getName(), rule.getFrom().getName());
 										}
@@ -154,8 +153,12 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 									for (int index=0, ie=gb.getNodes().size() ; index < ie ; index++) {
 										nodes.add(index);
 									}
+								} else if (elt instanceof SetReference) {
+									SetReference sref = (SetReference) elt;
+									nodes.addAll(gb.getSetDeclaration(sref.getRef().getName()));
 								}
 							}
+							GraphBuilder.collectSuffix(nodes, gb.getComposeGraph());
 						}
 					}, IResource.DEPTH_INFINITE);
 				}

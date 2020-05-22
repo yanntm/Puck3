@@ -9,12 +9,7 @@ PuckModel:
 
 	(namedSets+=SetDeclaration
 	|	rules+=Rule)*;
-//	statements+=Statement*;
 
-
-RuleSet :
-	SetDeclaration | IteratorDef
-;
 
 Rule:
 	'hide'
@@ -24,14 +19,50 @@ Rule:
 	';'
 ;
 
-
-RuleWithSet:
-	'hide'
-	hide=[RuleSet]
-	'from'
-	from=[RuleSet]
-	';'
+SetDeclaration:
+	name=ID '='  nodes=NodeSetOrAll
+	( 'except' except=NodeSet )? ';'	
 ;
+
+NodeSet :
+	('[' nodes+=NodeReference (',' nodes+=NodeReference)* ']')	
+;
+
+NodeSetOrAll returns NodeSet:
+	('[' nodes+=NodeReference (',' nodes+=NodeReference)* ']')
+	| nodes+=AllReference
+;
+
+NodeReference:
+	PackageReference | TypeReference | SetReference // | FieldReference | MethodReference
+;
+
+SetReference:
+	ref=[SetDeclaration] 
+;
+
+AllReference returns NodeReference:{AllReference}
+	'all'
+;
+
+TypeReference:
+  'type' type=JvmTypeReference
+;
+
+PackageReference:
+  'pkg' package=QualifiedName
+;
+
+
+
+
+/** Experimental stuff : rules for statements. 
+ * 
+//	statements+=Statement*;
+RuleSet :
+	SetDeclaration | IteratorDef
+;
+
 
 Statement : 
 	ForLoop | RuleWithSet | Filter
@@ -47,39 +78,19 @@ IteratorDef :
 	name=ID
 ;
 
+RuleWithSet:
+	'hide'
+	hide=[RuleSet]
+	'from'
+	from=[RuleSet]
+	';'
+;
+
+
 ForLoop: 
 	'for' '(' iter=IteratorDef ':' set=[SetDeclaration] ')'
 	'{' 
 		(body+=Statement)* 
 	'}'	
 ;
-
-SetDeclaration:
-	name=ID '='  nodes=NodeSet
-	( 'except' except=NodeSet )? ';'	
-;
-
-NodeSet:
-	'[' nodes+=NodeReference (',' nodes+=NodeReference)* ']'
-;
-
-NodeReference:
-	PackageReference | TypeReference  | AllReference | SetReference // | FieldReference | MethodReference
-;
-
-SetReference:
-	ref=[SetDeclaration] 
-;
-
-AllReference:{AllReference}
-	'all'
-;
-
-TypeReference:
-  'type' type=JvmTypeReference
-;
-
-PackageReference:
-  'pkg' package=QualifiedName
-;
-
+*/
