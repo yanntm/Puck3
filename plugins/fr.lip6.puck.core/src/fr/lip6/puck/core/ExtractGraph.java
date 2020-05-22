@@ -42,6 +42,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 
 import fr.lip6.move.gal.util.MatrixCol;
+import fr.lip6.puck.dsl.puck.AllReference;
 import fr.lip6.puck.dsl.puck.NodeReference;
 import fr.lip6.puck.dsl.puck.NodeSet;
 import fr.lip6.puck.dsl.puck.PackageReference;
@@ -149,6 +150,10 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 										System.out.println(" not found " + key);
 									}
 									
+								} else if (elt instanceof AllReference) {
+									for (int index=0, ie=gb.getNodes().size() ; index < ie ; index++) {
+										nodes.add(index);
+									}
 								}
 							}
 						}
