@@ -17,6 +17,7 @@ import com.google.inject.Injector;
 
 import fr.lip6.puck.dsl.PuckRuntimeModule;
 import fr.lip6.puck.dsl.PuckStandaloneSetup;
+import fr.lip6.puck.dsl.puck.PuckFactory;
 import fr.lip6.puck.dsl.puck.PuckModel;
 
 public class SerializationUtil {
@@ -51,9 +52,12 @@ public class SerializationUtil {
 		//resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
 		
 		Resource resource = resourceSet.getResource(uri, true);
-		PuckModel system = (PuckModel) resource.getContents().get(0);
-		
-		return system ;
+		if (! resource.getContents().isEmpty()) {
+			PuckModel system = (PuckModel) resource.getContents().get(0);			
+			return system ;
+		} else {
+			return PuckFactory.eINSTANCE.createPuckModel();
+		}
 	}
 
 	
