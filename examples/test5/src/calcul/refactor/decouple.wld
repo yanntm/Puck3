@@ -18,6 +18,11 @@ hide impl from notdecl;
 hide mc from mp;
 hide mp from mc;
 
+// NEW SYNTAX
+star = all except [ decl, impl ];
+
+
+
 //for (class : package) {
 //	if (class.getName().startsWith("Matrice")) {
 //		hide class from package;
