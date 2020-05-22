@@ -6,8 +6,9 @@ generate puck "http://www.lip6.fr/puck/dsl/Puck"
 
 PuckModel:
 	(imports=XImportSection)?
-	(namedSets+=SetDeclaration)*
-	rules+=Rule*;
+
+	(namedSets+=SetDeclaration
+	|	rules+=Rule)*;
 //	statements+=Statement*;
 
 
@@ -63,7 +64,11 @@ NodeSet:
 ;
 
 NodeReference:
-	PackageReference | TypeReference  // | FieldReference | MethodReference
+	PackageReference | TypeReference  | AllReference // | FieldReference | MethodReference
+;
+
+AllReference:{AllReference}
+	'all'
 ;
 
 TypeReference:
