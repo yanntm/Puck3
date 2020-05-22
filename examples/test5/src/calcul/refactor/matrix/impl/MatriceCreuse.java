@@ -1,9 +1,11 @@
-package calcul;
+package calcul.refactor.matrix.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MatriceCreuse {
+import calcul.refactor.matrix.IMatrice;
+
+public class MatriceCreuse implements IMatrice {
 	private Map<XY, Integer> elements;
 	private int hauteur ;
 	private int largeur;
@@ -14,14 +16,17 @@ public class MatriceCreuse {
 		elements = new HashMap<XY, Integer>();
 	}
 
+	@Override
 	public int getLargeur() {
 		return largeur;
 	}
 
+	@Override
 	public int getHauteur() {
 		return hauteur;
 	}
 
+	@Override
 	public void set(int x, int y, int value) {
 		if (x < 1 || x > getHauteur() || y < 1 || y > getLargeur())
 			throw new IndexOutOfBoundsException();
@@ -32,6 +37,7 @@ public class MatriceCreuse {
 			elements.remove(xy);
 	}
 
+	@Override
 	public int get(int x, int y) {
 		if (x < 1 || x > getHauteur() || y < 1 || y > getLargeur())
 			throw new IndexOutOfBoundsException();
@@ -42,14 +48,7 @@ public class MatriceCreuse {
 			return elements.get(xy).intValue();
 	}
 
-	public MatricePleine versPleine() {
-		MatricePleine mp = new MatricePleine(hauteur, largeur);
-		for (int x = 1; x <= hauteur; ++x)
-			for (int y = 1; y <= largeur; ++y)
-				mp.set(x, y, get(x, y));
-		return mp;
-	}
-
+	@Override
 	public double getTauxRemplissage() {
 		return getNbNonNuls() / (double) (getLargeur() * getHauteur());
 	}

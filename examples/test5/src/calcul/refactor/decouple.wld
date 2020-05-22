@@ -1,0 +1,28 @@
+import calcul.refactor.matrix.impl.*;
+
+impl = [ pkg calcul.refactor.matrix.impl ] ;
+decl = [ pkg calcul.refactor.matrix ] except [ pkg calcul.refactor.matrix.impl ] ;
+client = [ pkg calcul.refactor ];
+etoile = [ pkg calcul ];
+
+notdecl = [ pkg calcul, pkg calcul.refactor, pkg calcul.refactor.matrix ] except [ pkg calcul.refactor.matrix ] ;
+
+// siblings
+mc = [ type MatriceCreuse ];
+mp = [ type MatricePleine];
+
+// main rule 
+hide impl from client ;
+hide impl from notdecl;
+
+hide mc from mp;
+hide mp from mc;
+
+//for (class : package) {
+//	if (class.getName().startsWith("Matrice")) {
+//		hide class from package;
+//	}
+//}
+
+//hide lesMatrices from lesMatrices;
+//hide mp from mc;
