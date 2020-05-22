@@ -13,23 +13,29 @@ PuckModel:
 
 Rule:
 	'hide'
-	hide=[SetDeclaration]
+	hide=SetDefinition
 	'from'
-	from=[SetDeclaration]
+	from=SetDefinition
 	';'
 ;
 
+SetDefinition :
+	nodes=NodeSetOrAll
+	( 'except' except=NodeSet )? 
+;
+
 SetDeclaration:
-	name=ID '='  nodes=NodeSetOrAll
-	( 'except' except=NodeSet )? ';'	
+	name=ID '='  def=SetDefinition ';'	
 ;
 
 NodeSet :
 	('[' nodes+=NodeReference (',' nodes+=NodeReference)* ']')	
+	| nodes+=NodeReference 		
 ;
 
 NodeSetOrAll returns NodeSet:
 	('[' nodes+=NodeReference (',' nodes+=NodeReference)* ']')
+	| nodes+=NodeReference 
 	| nodes+=AllReference
 ;
 
