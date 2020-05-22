@@ -64,7 +64,11 @@ NodeSet:
 ;
 
 NodeReference:
-	PackageReference | TypeReference  | AllReference // | FieldReference | MethodReference
+	PackageReference | TypeReference  | AllReference | SetReference // | FieldReference | MethodReference
+;
+
+SetReference:
+	ref=[SetDeclaration] 
 ;
 
 AllReference:{AllReference}
