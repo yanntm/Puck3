@@ -1,9 +1,9 @@
 import calcul.refactor.matrix.impl.*
 
 impl = [ pkg calcul.refactor.matrix.impl ];
-decl = [ pkg calcul.refactor.matrix ] except [ pkg calcul.refactor.matrix.impl ] ;
-client = [ pkg calcul.refactor ];
-etoile = [ pkg calcul ];
+decl = [ pkg calcul.refactor.matrix ] except impl ;
+client = pkg calcul.refactor;
+etoile = pkg calcul;
 
 notdecl = [ pkg calcul, pkg calcul.refactor, pkg calcul.refactor.matrix ] except [ pkg calcul.refactor.matrix ] ;
 
@@ -11,19 +11,6 @@ notdecl = [ pkg calcul, pkg calcul.refactor, pkg calcul.refactor.matrix ] except
 mc = [ type MatriceCreuse ];
 mp = [ type MatricePleine];
 
-// main rule 
-hide impl from client ;
-hide impl from notdecl;
-
-hide mc from mp;
-hide mp from mc;
-
-// NEW SYNTAX
-star = all except [ decl, impl ];
-
-hide impl from all;
-
-// NEW SYNTAX
 hide [impl,decl] from all except type calcul.refactor.MatricesTest;
 
 //for (class : package) {

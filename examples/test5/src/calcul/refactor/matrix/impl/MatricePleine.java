@@ -13,22 +13,27 @@ public class MatricePleine implements IMatrice {
 			Arrays.fill(tab[i], 0);
 	}
 
+	@Override
 	public int getHauteur() {
 		return tab.length;
 	}
 
+	@Override
 	public int getLargeur() {
 		return tab[0].length;
 	}
 
+	@Override
 	public void set(int x, int y, int valeur) {
 		tab[x - 1][y - 1] = valeur;
 	}
 
+	@Override
 	public int get(int x, int y) {
 		return tab[x - 1][y - 1];
 	}
 
+	@Override
 	public double getTauxRemplissage() {
 		return getNbNonNuls() / (double) (getLargeur() * getHauteur());
 	}
