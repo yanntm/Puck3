@@ -1,6 +1,6 @@
-import calcul.refactor.matrix.impl.*;
+import calcul.refactor.matrix.impl.*
 
-impl = [ pkg calcul.refactor.matrix.impl ] ;
+impl = [ pkg calcul.refactor.matrix.impl ];
 decl = [ pkg calcul.refactor.matrix ] except [ pkg calcul.refactor.matrix.impl ] ;
 client = [ pkg calcul.refactor ];
 etoile = [ pkg calcul ];
@@ -21,7 +21,10 @@ hide mp from mc;
 // NEW SYNTAX
 star = all except [ decl, impl ];
 
+hide impl from all;
 
+// NEW SYNTAX
+hide [impl,decl] from all except type calcul.refactor.MatricesTest;
 
 //for (class : package) {
 //	if (class.getName().startsWith("Matrice")) {
