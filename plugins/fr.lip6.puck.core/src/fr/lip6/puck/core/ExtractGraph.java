@@ -49,6 +49,7 @@ import fr.lip6.puck.dsl.puck.PackageReference;
 import fr.lip6.puck.dsl.puck.PuckModel;
 import fr.lip6.puck.dsl.puck.Rule;
 import fr.lip6.puck.dsl.puck.SetDeclaration;
+import fr.lip6.puck.dsl.puck.SetDefinition;
 import fr.lip6.puck.dsl.puck.SetReference;
 import fr.lip6.puck.dsl.puck.TypeReference;
 import fr.lip6.puck.dsl.serialization.SerializationUtil;
@@ -104,19 +105,12 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 										Map<String,Set<Integer>> sets = new HashMap<>();
 										Map<String,Set<Integer>> excepts = new HashMap<>();
 										for (SetDeclaration set : pm.getNamedSets()){
-											Set<Integer> nodes = new HashSet<>();
-											collectSet(gb, set.getNodes(), nodes);
-											
-											if (set.getExcept() != null) {
-												Set<Integer> except =  new HashSet<>();
-												collectSet(gb, set.getExcept(), except);
-												nodes.removeAll(except);
-											}
+											Set<Integer> nodes = parseSetDeclaration(gb, set.getDef());
 											gb.addSetDeclaration(set.getName(), nodes);
 										}
 										System.out.println("Parsed " + sets);
 										for (Rule rule : pm.getRules()) {
-											gb.addRule(rule.getHide().getName(), rule.getFrom().getName());
+											gb.addRule(parseSetDeclaration(gb, rule.getHide()), parseSetDeclaration(gb, rule.getFrom()),SerializationUtil.toText(rule));
 										}
 									} catch (IOException e) {
 										e.printStackTrace();
@@ -124,6 +118,18 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 								}
 							}
 							return false;
+						}
+
+						private Set<Integer> parseSetDeclaration(GraphBuilder gb, SetDefinition sdef) {
+							Set<Integer> nodes = new HashSet<>();
+							collectSet(gb, sdef.getNodes(), nodes);
+							
+							if (sdef.getExcept() != null) {
+								Set<Integer> except =  new HashSet<>();
+								collectSet(gb, sdef.getExcept(), except);
+								nodes.removeAll(except);
+							}
+							return nodes;
 						}
 
 						private void collectSet(GraphBuilder gb, NodeSet set, Set<Integer> nodes) {

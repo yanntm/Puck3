@@ -313,13 +313,14 @@ public class GraphBuilder extends ASTVisitor {
 				}
 			}
 
-			for (Rule rule : rules) {
-				out.println("  "+rule.hide+ " -> " + rule.from + " [color=red] ;");							
-			}
+			// broken right now
+//			for (Rule rule : rules) {
+//				out.println("  "+rule.hide+ " -> " + rule.from + " [color=red] ;");							
+//			}
 		} else {
 			for (Rule rule : rules) {
-				Set<Integer> from = new HashSet<>(setDeclarations.get(rule.from));
-				Set<Integer> hide = new HashSet<>(setDeclarations.get(rule.hide));
+				Set<Integer> from = new HashSet<>(rule.from);
+				Set<Integer> hide = new HashSet<>(rule.hide);
 				
 				from.removeAll(hide);
 				
@@ -340,8 +341,8 @@ public class GraphBuilder extends ASTVisitor {
 	public void addErrorMarkers() throws JavaModelException, CoreException {
 		getComposeGraph();
 		for (Rule rule : rules) {
-			Set<Integer> from = new HashSet<>(setDeclarations.get(rule.from));
-			Set<Integer> hide = new HashSet<>(setDeclarations.get(rule.hide));
+			Set<Integer> from = new HashSet<>(rule.from);
+			Set<Integer> hide = new HashSet<>(rule.hide);
 			
 			from.removeAll(hide);
 			
@@ -356,7 +357,7 @@ public class GraphBuilder extends ASTVisitor {
 								IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker(IMarker.PROBLEM);
 								marker.setAttribute(IMarker.CHAR_START, reason.getStartPosition());
 								marker.setAttribute(IMarker.CHAR_END, reason.getStartPosition() + reason.getLength());
-								marker.setAttribute(IMarker.MESSAGE, "Violates Puck rule : hide " + rule.hide + " from " + rule.from);
+								marker.setAttribute(IMarker.MESSAGE, "Violates Puck rule :"+ rule.text);
 								marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 								marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 							}
@@ -448,15 +449,17 @@ public class GraphBuilder extends ASTVisitor {
 
 	
 	private static class Rule {
-		public final String hide;
-		public final String from;
-		public Rule(String hide, String from) {
+		public String text;
+		public final Set<Integer> hide;
+		public final Set<Integer> from;
+		public Rule(Set<Integer> hide, Set<Integer> from, String text) {
 			this.hide = hide;
 			this.from = from;
+			this.text = text;
 		}
 	}
-	public void addRule (String hide, String from) {
-		this.rules .add (new Rule(hide,from));
+	public void addRule (Set<Integer> hide, Set<Integer> from, String text) {
+		this.rules.add (new Rule(hide,from, text));
 	}
 
 	
