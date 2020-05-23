@@ -87,8 +87,6 @@ public class PuckGraph {
 				Set<Integer> from = new HashSet<>(rule.from);
 				Set<Integer> hide = new HashSet<>(rule.hide);
 				
-				from.removeAll(hide);
-				
 				for (Integer interloper : from) {
 					for (Integer secret : hide) {
 						if (useGraph.hasEdge(secret, interloper) || composeGraph.hasEdge(secret, interloper)) {
