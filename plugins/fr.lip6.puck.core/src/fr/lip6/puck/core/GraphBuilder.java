@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * @author Yann
  *
  */
-public class GraphBuilder  {
+public final class GraphBuilder  {
 
 	/**
 	 * Visits the parsed AST of these compilation units to first collect a set of nodes,
@@ -203,4 +203,5 @@ public class GraphBuilder  {
 
 	}
 
+	private GraphBuilder() {}
 }
