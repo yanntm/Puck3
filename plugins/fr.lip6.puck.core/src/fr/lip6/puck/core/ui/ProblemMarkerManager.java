@@ -10,8 +10,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import fr.lip6.puck.core.PuckGraph;
-import fr.lip6.puck.core.PuckGraph.Rule;
+import fr.lip6.puck.graph.PuckGraph;
+import fr.lip6.puck.graph.PuckGraph.Rule;
 
 public class ProblemMarkerManager {
 

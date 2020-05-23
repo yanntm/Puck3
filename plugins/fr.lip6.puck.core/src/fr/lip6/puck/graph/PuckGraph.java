@@ -1,4 +1,4 @@
-package fr.lip6.puck.core;
+package fr.lip6.puck.graph;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,6 @@ import java.util.Set;
 import org.eclipse.jdt.core.dom.IBinding;
 
 import java.util.Map.Entry;
-
-import android.util.SparseIntArray;
 
 
 public class PuckGraph {

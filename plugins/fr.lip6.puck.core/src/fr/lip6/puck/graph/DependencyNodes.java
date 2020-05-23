@@ -1,4 +1,4 @@
-package fr.lip6.puck.core;
+package fr.lip6.puck.graph;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

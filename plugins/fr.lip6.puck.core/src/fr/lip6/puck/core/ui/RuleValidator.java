@@ -3,24 +3,21 @@ package fr.lip6.puck.core.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceProxy;
-import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import fr.lip6.puck.core.ExtractGraph;
-import fr.lip6.puck.core.GraphBuilder;
-import fr.lip6.puck.core.PuckGraph;
+import fr.lip6.puck.graph.PuckGraph;
+import fr.lip6.puck.jdt.JavaParserHelper;
+import fr.lip6.puck.parse.GraphBuilder;
+import fr.lip6.puck.parse.PuckInterpreter;
 
 public class RuleValidator extends CompilationParticipant {
 
@@ -30,33 +27,10 @@ public class RuleValidator extends CompilationParticipant {
 	@Override
 	public boolean isActive(IJavaProject project) {
 		try {
-			for (IPackageFragmentRoot fragment : project.getAllPackageFragmentRoots()) {
-				if (fragment.getKind() == IPackageFragmentRoot.K_SOURCE) {
-					IResource res = fragment.getCorrespondingResource();
-					if (res instanceof IFolder) {
-						IFolder folder = (IFolder) res;
-						boolean [] result = new boolean[1];
-						folder.accept(new IResourceProxyVisitor() {						
-							@Override
-							public boolean visit(IResourceProxy proxy) throws CoreException {
-								if (proxy.getType() == IResource.FOLDER) {
-									if (! result[0])
-										return true;
-								} else if (proxy.getType() == IResource.FILE) {
-									if (proxy.getName().endsWith(".wld")) {
-										result[0] = true;
-									}
-								}
-								return false;
-							}
-						}
-						, IResource.DEPTH_INFINITE);
-						if (result[0]) return true;
-					}
-				}
-			}
+			boolean [] res = new boolean[1];
+			JavaParserHelper.findRuleFiles(project, x -> {res[0]=true;return null;});
+			return res[0];
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
@@ -78,10 +52,10 @@ public class RuleValidator extends CompilationParticipant {
 					}
 				}
 			}
-			List<CompilationUnit> parsedCu = ExtractGraph.parseSources(project, sources.toArray(new ICompilationUnit[sources.size()]), null);
+			List<CompilationUnit> parsedCu = JavaParserHelper.parseSources(project, sources.toArray(new ICompilationUnit[sources.size()]), null);
 			PuckGraph graph = GraphBuilder.collectGraph(parsedCu);
-			ExtractGraph.collectRules(project, graph);
-			
+			PuckInterpreter.findAndParsePuckFiles(project, graph);
+
 			ProblemMarkerManager.addErrorMarkers(graph);
 //			gb.getNodes().get(0).getJavaElement().getJavaModel();
 			

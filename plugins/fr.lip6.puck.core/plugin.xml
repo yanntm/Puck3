@@ -6,7 +6,7 @@
          name="fr.lip6.puck.cleanup"
          point="org.eclipse.jdt.ui.cleanUps">
       <cleanUp
-            class="fr.lip6.puck.core.ExtractGraph"
+            class="fr.lip6.puck.core.ui.ExtractGraph"
             id="fr.lip6.puck.core.ExtractGraph">
       </cleanUp>
    </extension>

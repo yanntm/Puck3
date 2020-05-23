@@ -1,4 +1,4 @@
-package fr.lip6.puck.core;
+package fr.lip6.puck.parse;
 
 import java.util.List;
 import java.util.Stack;
@@ -16,6 +16,9 @@ import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+
+import fr.lip6.puck.graph.DependencyNodes;
+import fr.lip6.puck.graph.PuckGraph;
 
 
 /**
