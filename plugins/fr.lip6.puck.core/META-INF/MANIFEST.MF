@@ -14,4 +14,5 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.emf.common,
  org.eclipse.xtext,
  fr.lip6.puck.dsl,
- org.eclipse.xtext.common.types
+ org.eclipse.xtext.common.types,
+ fr.lip6.puck.util

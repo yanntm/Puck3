@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: fr.lip6.puck.util
+Bundle-SymbolicName: fr.lip6.puck.util
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: LIP6
+Automatic-Module-Name: fr.lip6.puck.util
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: android.util,
+ fr.lip6.move.gal.util
