@@ -2,21 +2,16 @@ package fr.lip6.puck.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -24,24 +19,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTRequestor;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.IPackageBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.fix.AbstractCleanUp;
 import org.eclipse.jdt.ui.cleanup.ICleanUp;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-
-import fr.lip6.move.gal.util.MatrixCol;
+import fr.lip6.move.gal.util.GraphUtils;
 import fr.lip6.puck.dsl.puck.AllReference;
 import fr.lip6.puck.dsl.puck.NodeReference;
 import fr.lip6.puck.dsl.puck.NodeSet;
@@ -68,8 +51,8 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		GraphBuilder gb = GraphBuilder.collectGraph(parsedCu);
 		
 		// let's have a look at it !
-		MatrixCol useGraph = gb.getUseGraph();
-		System.out.println(useGraph);		
+		DependencyGraph useGraph = gb.getUseGraph();
+		//System.out.println(useGraph);		
 		
 		collectRules(project, gb);
 		
@@ -163,7 +146,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 									nodes.addAll(gb.getSetDeclaration(sref.getRef().getName()));
 								}
 							}
-							GraphBuilder.collectSuffix(nodes, gb.getComposeGraph());
+							GraphUtils.collectSuffix(nodes, gb.getComposeGraph());
 						}
 					}, IResource.DEPTH_INFINITE);
 				}

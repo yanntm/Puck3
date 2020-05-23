@@ -40,7 +40,7 @@ public class GraphBuilder extends ASTVisitor {
 	private List<ITypeBinding> types;
 	private List<IMethodBinding> methods;
 	private List<IVariableBinding> attributes;
-	private MatrixCol useGraph;
+	private DependencyGraph useGraph;
 	private Stack<Integer> currentOwner = new Stack<>();
 	private MatrixCol composeGraph = null;
 	private Map<String,Set<Integer>> setDeclarations = new HashMap<>();
@@ -54,7 +54,7 @@ public class GraphBuilder extends ASTVisitor {
 		this.methods = methods;
 		this.attributes = attributes;
 		nodes.addAll(packages);
-		this.useGraph = new MatrixCol(nodes.size(), nodes.size());
+		this.useGraph = new DependencyGraph(nodes.size());
 	}
 
 	/**
@@ -71,11 +71,6 @@ public class GraphBuilder extends ASTVisitor {
 		super.preVisit(node);
 	}	
 
-	private Map<Integer,Map<Integer,List<ASTNode>>> reasons = new HashMap<>();
-	
-	public Map<Integer, Map<Integer, List<ASTNode>>> getReasons() {
-		return reasons;
-	}
 	/**
 	 * Add a dependency from top of curentOwner stack (if any) to the node referred to in the binding (if any).
 	 * @param tb A @see {@link IBinding} resolved name that might point to a node of the graph.
@@ -86,40 +81,10 @@ public class GraphBuilder extends ASTVisitor {
 			int indexSrc = currentOwner.peek();
 			int indexDst = findIndex(nodes, tb);
 			if (indexDst != indexSrc && indexDst >= 0 && indexSrc >= 0) {
-				useGraph.set(indexDst, indexSrc, 1);
-				reasons.computeIfAbsent(indexDst, k -> new HashMap<>()).computeIfAbsent(indexSrc, k -> new ArrayList<>()).add(node);
+				useGraph.addEdge(indexDst, indexSrc, node);
 			}
 		}
-	}
-	
-	
-	public static void collectPrefix(Set<Integer> safeNodes, MatrixCol graph) {
-		// work with predecessor relationship
-		MatrixCol tgraph = graph.transpose();
-		collectSuffix(safeNodes, tgraph);
-	}
-		
-	public static void collectSuffix(Set<Integer> safeNodes, MatrixCol graph) {
-
-		Set<Integer> seen = new HashSet<>();
-		List<Integer> todo = new ArrayList<>(safeNodes);
-		while (! todo.isEmpty()) {
-			List<Integer> next = new ArrayList<>();
-			seen.addAll(todo);
-			for (int n : todo) {
-				SparseIntArray succ = graph.getColumn(n);
-				for (int i=0; i < succ.size() ; i++) {
-					int pre = succ.keyAt(i);
-					if (seen.add(pre)) {
-						next.add(pre);
-					}
-				}
-			}
-			todo = next;			
-		}
-		safeNodes.addAll(seen);
-	}
-
+	}	
 	
 	/**
 	 * Owner becomes the current type declaration.
@@ -140,7 +105,7 @@ public class GraphBuilder extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		currentOwner.push(nodes.indexOf(node.resolveBinding()));		
+		currentOwner.push(nodes.indexOf(node.resolveBinding()));
 		return true;
 	}
 
@@ -214,7 +179,7 @@ public class GraphBuilder extends ASTVisitor {
 	 * Accessor for user : the result of traversing the compilation units.
 	 * @return
 	 */
-	public MatrixCol getUseGraph() {
+	public DependencyGraph getUseGraph() {
 		return useGraph;
 	}
 	
@@ -286,13 +251,7 @@ public class GraphBuilder extends ASTVisitor {
 		}
 		
 		// usage edges
-		for (int coli=0,colie=useGraph.getColumnCount(); coli<colie;coli++ ) {
-			SparseIntArray col = useGraph.getColumn(coli);
-			for (int i=0,ie=col.size();i<ie;i++) {
-				int colj = col.keyAt(i);
-				out.println("  n"+coli+ " -> n" + colj + " ;");
-			}
-		}
+		useGraph.dotExport(out, "");
 		
 		// containment edges 
 		for (int coli=0,colie=getComposeGraph().getColumnCount(); coli<colie;coli++ ) {
@@ -326,7 +285,7 @@ public class GraphBuilder extends ASTVisitor {
 				
 				for (Integer interloper : from) {
 					for (Integer secret : hide) {
-						if (useGraph.get(secret, interloper) != 0 || composeGraph.get(secret, interloper) != 0) {
+						if (useGraph.hasEdge(secret, interloper) || composeGraph.get(secret, interloper) != 0) {
 							out.println("  n"+interloper+ " -> n" + secret + " [color=red] ;");														
 						}
 					}
@@ -339,7 +298,7 @@ public class GraphBuilder extends ASTVisitor {
 	}
 
 	public void addErrorMarkers() throws JavaModelException, CoreException {
-		getComposeGraph();
+		MatrixCol cgraph = getComposeGraph();
 		for (Rule rule : rules) {
 			Set<Integer> from = new HashSet<>(rule.from);
 			Set<Integer> hide = new HashSet<>(rule.hide);
@@ -348,8 +307,8 @@ public class GraphBuilder extends ASTVisitor {
 			
 			for (Integer interloper : from) {
 				for (Integer secret : hide) {
-					if (useGraph.get(secret, interloper) != 0) {
-						List<ASTNode> explains = reasons.getOrDefault(secret, Collections.emptyMap()).getOrDefault(interloper, Collections.emptyList());
+					if (useGraph.hasEdge(secret, interloper)) {
+						List<ASTNode> explains = useGraph.getReasons(secret,interloper); 
 						for (ASTNode reason : explains) {
 							ASTNode root = reason.getRoot();
 							if (root.getNodeType() == ASTNode.COMPILATION_UNIT) {
