@@ -102,13 +102,12 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 										String file = member.getLocation().toFile().getCanonicalPath();
 										PuckModel pm  = SerializationUtil.resourceToPuckModel(member);
 										System.out.println("Found a file " + file + " containing " + pm.getRules().size() + " rules.");
-										Map<String,Set<Integer>> sets = new HashMap<>();
-										Map<String,Set<Integer>> excepts = new HashMap<>();
+										
 										for (SetDeclaration set : pm.getNamedSets()){
 											Set<Integer> nodes = parseSetDeclaration(gb, set.getDef());
 											gb.addSetDeclaration(set.getName(), nodes);
 										}
-										System.out.println("Parsed " + sets);
+										// System.out.println("Parsed " + sets);
 										for (Rule rule : pm.getRules()) {
 											gb.addRule(parseSetDeclaration(gb, rule.getHide()), parseSetDeclaration(gb, rule.getFrom()),SerializationUtil.toText(rule));
 										}
