@@ -38,7 +38,13 @@ public class PuckInterpreter {
 		}
 		// System.out.println("Parsed " + sets);
 		for (Rule rule : pm.getRules()) {
-			graph.addRule(parseSetDeclaration(graph, rule.getHide()), parseSetDeclaration(graph, rule.getFrom()),SerializationUtil.toText(rule));
+			Set<Integer> from = parseSetDeclaration(graph, rule.getFrom());
+			Set<Integer> hide = parseSetDeclaration(graph, rule.getHide());
+			// semantics is we don't hide from ourselves
+			from.removeAll(hide);
+			if (! from.isEmpty() && ! hide.isEmpty()) {
+				graph.addRule(hide, from,SerializationUtil.toText(rule));
+			}
 		}
 	}
 	
