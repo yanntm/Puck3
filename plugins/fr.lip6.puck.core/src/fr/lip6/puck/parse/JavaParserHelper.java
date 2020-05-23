@@ -1,4 +1,4 @@
-package fr.lip6.puck.jdt;
+package fr.lip6.puck.parse;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,7 +18,6 @@ import fr.lip6.puck.dsl.puck.SetReference;
 import fr.lip6.puck.dsl.puck.TypeReference;
 import fr.lip6.puck.dsl.serialization.SerializationUtil;
 import fr.lip6.puck.graph.PuckGraph;
-import fr.lip6.puck.jdt.JavaParserHelper;
 
 public class PuckInterpreter {
 

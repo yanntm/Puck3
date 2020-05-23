@@ -12,8 +12,8 @@ import org.eclipse.jdt.ui.cleanup.ICleanUp;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import fr.lip6.puck.graph.PuckGraph;
-import fr.lip6.puck.jdt.JavaParserHelper;
 import fr.lip6.puck.parse.GraphBuilder;
+import fr.lip6.puck.parse.JavaParserHelper;
 import fr.lip6.puck.parse.PuckInterpreter;
 
 //@SuppressWarnings("restriction") // yes, AbstractCleanup is kind of internal API to JDT, but for this use case it's fine.

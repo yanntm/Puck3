@@ -15,8 +15,8 @@ import org.eclipse.jdt.core.compiler.CompilationParticipant;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import fr.lip6.puck.graph.PuckGraph;
-import fr.lip6.puck.jdt.JavaParserHelper;
 import fr.lip6.puck.parse.GraphBuilder;
+import fr.lip6.puck.parse.JavaParserHelper;
 import fr.lip6.puck.parse.PuckInterpreter;
 
 public class RuleValidator extends CompilationParticipant {
