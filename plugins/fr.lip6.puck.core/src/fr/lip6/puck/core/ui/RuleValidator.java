@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import fr.lip6.puck.core.ExtractGraph;
 import fr.lip6.puck.core.GraphBuilder;
+import fr.lip6.puck.core.PuckGraph;
 
 public class RuleValidator extends CompilationParticipant {
 
@@ -78,10 +79,10 @@ public class RuleValidator extends CompilationParticipant {
 				}
 			}
 			List<CompilationUnit> parsedCu = ExtractGraph.parseSources(project, sources.toArray(new ICompilationUnit[sources.size()]), null);
-			GraphBuilder gb = GraphBuilder.collectGraph(parsedCu);
-			ExtractGraph.collectRules(project, gb);
+			PuckGraph graph = GraphBuilder.collectGraph(parsedCu);
+			ExtractGraph.collectRules(project, graph);
 			
-			gb.addErrorMarkers();
+			ProblemMarkerManager.addErrorMarkers(graph);
 //			gb.getNodes().get(0).getJavaElement().getJavaModel();
 			
 		} catch (CoreException e) {

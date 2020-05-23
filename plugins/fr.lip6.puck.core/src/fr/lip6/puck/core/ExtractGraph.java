@@ -48,17 +48,16 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		
 		// first traversal : grab packages, types, method declarations, attribute declarations
 		
-		GraphBuilder gb = GraphBuilder.collectGraph(parsedCu);
+		PuckGraph graph = GraphBuilder.collectGraph(parsedCu);
 		
 		// let's have a look at it !
-		DependencyGraph useGraph = gb.getUseGraph();
-		//System.out.println(useGraph);		
+		//System.out.println(graph);		
 		
-		collectRules(project, gb);
+		collectRules(project, graph);
 		
 		// let's build a graphviz file for it
 		try {
-			gb.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
+			graph.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -67,7 +66,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		return new RefactoringStatus();
 	}
 
-	public static void collectRules(IJavaProject project, GraphBuilder gb) throws JavaModelException, CoreException {
+	public static void collectRules(IJavaProject project, PuckGraph graph) throws JavaModelException, CoreException {
 		for (IPackageFragmentRoot fragment : project.getAllPackageFragmentRoots()) {
 			if (fragment.getKind() == IPackageFragmentRoot.K_SOURCE) {
 				IResource res = fragment.getCorrespondingResource();
@@ -87,12 +86,12 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 										System.out.println("Found a file " + file + " containing " + pm.getRules().size() + " rules.");
 										
 										for (SetDeclaration set : pm.getNamedSets()){
-											Set<Integer> nodes = parseSetDeclaration(gb, set.getDef());
-											gb.addSetDeclaration(set.getName(), nodes);
+											Set<Integer> nodes = parseSetDeclaration(graph, set.getDef());
+											graph.addSetDeclaration(set.getName(), nodes);
 										}
 										// System.out.println("Parsed " + sets);
 										for (Rule rule : pm.getRules()) {
-											gb.addRule(parseSetDeclaration(gb, rule.getHide()), parseSetDeclaration(gb, rule.getFrom()),SerializationUtil.toText(rule));
+											graph.addRule(parseSetDeclaration(graph, rule.getHide()), parseSetDeclaration(graph, rule.getFrom()),SerializationUtil.toText(rule));
 										}
 									} catch (IOException e) {
 										e.printStackTrace();
@@ -102,25 +101,25 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 							return false;
 						}
 
-						private Set<Integer> parseSetDeclaration(GraphBuilder gb, SetDefinition sdef) {
+						private Set<Integer> parseSetDeclaration(PuckGraph graph, SetDefinition sdef) {
 							Set<Integer> nodes = new HashSet<>();
-							collectSet(gb, sdef.getNodes(), nodes);
+							collectSet(graph, sdef.getNodes(), nodes);
 							
 							if (sdef.getExcept() != null) {
 								Set<Integer> except =  new HashSet<>();
-								collectSet(gb, sdef.getExcept(), except);
+								collectSet(graph, sdef.getExcept(), except);
 								nodes.removeAll(except);
 							}
 							return nodes;
 						}
 
-						private void collectSet(GraphBuilder gb, NodeSet set, Set<Integer> nodes) {
+						private void collectSet(PuckGraph graph, NodeSet set, Set<Integer> nodes) {
 							for (NodeReference elt : set.getNodes()) {
 								if (elt instanceof TypeReference) {
 									TypeReference tref = (TypeReference) elt;
 									String key = tref.getType().getIdentifier();
 									//IJvm
-									int index = gb.findIndex(gb.getNodes(), key);
+									int index = graph.findIndex(key);
 									if (index != -1) {
 										nodes.add(index);
 									} else {
@@ -130,7 +129,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 									PackageReference pkg = (PackageReference) elt;
 									String key = pkg.getPackage();
 									//IJvm
-									int index = gb.findIndex(gb.getNodes(), key);
+									int index = graph.findIndex(key);
 									if (index != -1) {
 										nodes.add(index);
 									} else {
@@ -138,15 +137,15 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 									}
 									
 								} else if (elt instanceof AllReference) {
-									for (int index=0, ie=gb.getNodes().size() ; index < ie ; index++) {
+									for (int index=0, ie=graph.getNodes().size() ; index < ie ; index++) {
 										nodes.add(index);
 									}
 								} else if (elt instanceof SetReference) {
 									SetReference sref = (SetReference) elt;
-									nodes.addAll(gb.getSetDeclaration(sref.getRef().getName()));
+									nodes.addAll(graph.getSetDeclaration(sref.getRef().getName()));
 								}
 							}
-							GraphUtils.collectSuffix(nodes, gb.getComposeGraph());
+							graph.getComposeGraph().collectSuffix(nodes);
 						}
 					}, IResource.DEPTH_INFINITE);
 				}

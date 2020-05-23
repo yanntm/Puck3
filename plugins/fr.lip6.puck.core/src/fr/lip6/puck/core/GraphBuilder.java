@@ -1,28 +1,14 @@
 package fr.lip6.puck.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 import java.util.Stack;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -31,30 +17,12 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-import android.util.SparseIntArray;
-import fr.lip6.move.gal.util.MatrixCol;
-
 public class GraphBuilder extends ASTVisitor {
-	private List<IBinding> nodes;
-	private List<IPackageBinding> packages;
-	private List<ITypeBinding> types;
-	private List<IMethodBinding> methods;
-	private List<IVariableBinding> attributes;
-	private DependencyGraph useGraph;
+	private PuckGraph graph;
 	private Stack<Integer> currentOwner = new Stack<>();
-	private MatrixCol composeGraph = null;
-	private Map<String,Set<Integer>> setDeclarations = new HashMap<>();
-	private List<Rule> rules = new ArrayList<>();
 
-	public GraphBuilder(List<IBinding> nodes, List<IPackageBinding> packages, List<ITypeBinding> types,
-			List<IMethodBinding> methods, List<IVariableBinding> attributes) {
-		this.nodes = nodes;
-		this.packages = packages;
-		this.types = types;
-		this.methods = methods;
-		this.attributes = attributes;
-		nodes.addAll(packages);
-		this.useGraph = new DependencyGraph(nodes.size());
+	public GraphBuilder(DependencyNodes nodes) {
+		this.graph = new PuckGraph(nodes);
 	}
 
 	/**
@@ -79,9 +47,9 @@ public class GraphBuilder extends ASTVisitor {
 	private void addDependency(IBinding tb, ASTNode node) {
 		if (!currentOwner.isEmpty()) {
 			int indexSrc = currentOwner.peek();
-			int indexDst = findIndex(nodes, tb);
+			int indexDst = graph.getNodes().findIndex(tb);
 			if (indexDst != indexSrc && indexDst >= 0 && indexSrc >= 0) {
-				useGraph.addEdge(indexDst, indexSrc, node);
+				graph.getUseGraph().addEdge(indexDst, indexSrc, node);
 			}
 		}
 	}	
@@ -91,7 +59,14 @@ public class GraphBuilder extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		currentOwner.push(nodes.indexOf(node.resolveBinding()));		
+		ITypeBinding type = node.resolveBinding();
+		int cur = graph.getNodes().findIndex(type);
+		if (!currentOwner.isEmpty()) {
+			graph.getComposeGraph().addEdge(cur, currentOwner.peek(), node);
+		}
+		int parent = graph.findIndex(type.getPackage());
+		graph.getComposeGraph().addEdge(cur, parent, node);		
+		currentOwner.push(cur);		
 		return true;
 	}
 
@@ -105,7 +80,11 @@ public class GraphBuilder extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		currentOwner.push(nodes.indexOf(node.resolveBinding()));
+		int cur = graph.getNodes().findIndex(node.resolveBinding());
+		if (!currentOwner.isEmpty()) {
+			graph.getComposeGraph().addEdge(cur, currentOwner.peek(), node);
+		}
+		currentOwner.push(cur);
 		return true;
 	}
 
@@ -120,7 +99,11 @@ public class GraphBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(VariableDeclarationFragment node) {
 		if (node.getParent() instanceof FieldDeclaration) {
-			currentOwner.push(nodes.indexOf(node.resolveBinding()));
+			int cur = graph.getNodes().findIndex(node.resolveBinding());
+			if (!currentOwner.isEmpty()) {
+				graph.getComposeGraph().addEdge(cur, currentOwner.peek(), node);
+			}
+			currentOwner.push(cur);
 		}
 		return true;
 	}
@@ -131,224 +114,57 @@ public class GraphBuilder extends ASTVisitor {
 			currentOwner.pop();
 		} 
 	}
-	
-	/**
-	 * Find the index of a node or -1 if not found.
-	 * TODO : we should really use a Map<IBinding,Integer> 
-	 * @param nodes the list
-	 * @param tb the object
-	 * @return the index of object in list or -1 if not found.
-	 */
-	public int findIndex(List<IBinding> nodes, IBinding tb) {
-		int indexDst = nodes.indexOf(tb);
-		return indexDst;
-	}
 
-	/**
-	 * Find the index of a node or -1 if not found.
-	 * TODO : we should really use a Map<IBinding,Integer> 
-	 * @param nodes the list
-	 * @param tb the object
-	 * @return the index of object in list or -1 if not found.
-	 */
-	public int findIndex(List<IBinding> nodes, String tname) {
-		int indexDst = -1;
-		for (int i=0; i < nodes.size(); i++) {
-			IBinding elt = nodes.get(i);
-			if (elt instanceof ITypeBinding) {
-				ITypeBinding tb = (ITypeBinding) elt;
-				String id = tb.getQualifiedName(); 
-				if (id.equals(tname)) {
-					return i;
-				}
-			} else if (elt instanceof IPackageBinding) {
-				IPackageBinding pkg = (IPackageBinding) elt;
-				String id = pkg.getName(); 
-				if (id.equals(tname)) {
-					return i;
-				}
-			}
-		}
-		return indexDst;
-	}
-
-	public List<IBinding> getNodes() {
-		return nodes;
-	}
 	/**
 	 * Accessor for user : the result of traversing the compilation units.
 	 * @return
 	 */
-	public DependencyGraph getUseGraph() {
-		return useGraph;
+	public PuckGraph getGraph() {
+		return graph;
 	}
 	
-	/**
-	 * Accessor for user : the result of traversing the compilation units.
-	 * @return
-	 */
-	public MatrixCol getComposeGraph() {
-		if (composeGraph == null) {
-			for (ITypeBinding type : types) {
-				IPackageBinding pkg = type.getPackage();
-				if (!packages.contains(pkg)) {
-					packages.add(pkg);
-					nodes.add(pkg);
-				}
-			}
-			composeGraph = new MatrixCol(nodes.size(), nodes.size());
-			// containment edges
-			for (IMethodBinding meth: methods) {
-				int elt = findIndex(nodes, meth);
-				int parent = findIndex(nodes, meth.getDeclaringClass());
-				if (elt >= 0 && parent >= 0) {
-					composeGraph.set(elt, parent, 1);
-				}
-			}
-			for (IVariableBinding meth: attributes) {
-				int elt = findIndex(nodes, meth);
-				int parent = findIndex(nodes, meth.getDeclaringClass());
-				if (elt >= 0 && parent >= 0) {
-					composeGraph.set(elt, parent, 1);
-				}
-			}
-			for (ITypeBinding type : types) {
-				int elt = findIndex(nodes, type);
-				int parent = findIndex(nodes, type.getPackage());
-				if (elt >= 0 && parent >= 0) {
-					composeGraph.set(elt, parent, 1);
-				}
-			}
-		}
-		return composeGraph;
-	}
-
-	/**
-	 * A visual representation for our graphs.
-	 * @param path where will we build this dot file 
-	 * @throws IOException if we couldn't write to that place.
-	 */
-	public void exportDot (String path) throws IOException {
-		getComposeGraph();
-		PrintWriter out = new PrintWriter(new File(path));
-		out.println("digraph  G {");
-		int index = 0;
-		for (IBinding elt : nodes) {
-			if (elt instanceof ITypeBinding) {
-				ITypeBinding tb = (ITypeBinding) elt;
-				out.println("  n"+index+ " [shape=box,label=\""+tb.getQualifiedName()+"\"]");
-			} else if (elt instanceof IVariableBinding) {
-				IVariableBinding vb = (IVariableBinding) elt;
-				out.println("  n"+index+ " [shape=doubleellipse,label=\"" + vb.getDeclaringClass().getQualifiedName()+"."+vb.getName()+"\"];");
-			} else if (elt instanceof IMethodBinding) {
-				IMethodBinding mb = (IMethodBinding) elt;
-				out.println("  n"+index+ " [shape=octagon,label=\"" + mb.getDeclaringClass().getQualifiedName()+"."+mb.getName()+"\"];");
-			} else if (elt instanceof IPackageBinding) {
-				IPackageBinding pkg = (IPackageBinding) elt;
-				out.println("  n"+index+ " [shape=folder,label=\"" + pkg.getName() +"\"];");				
-			}
-			index++;
-		}
-		
-		// usage edges
-		useGraph.dotExport(out, "");
-		
-		// containment edges 
-		for (int coli=0,colie=getComposeGraph().getColumnCount(); coli<colie;coli++ ) {
-			SparseIntArray col = getComposeGraph().getColumn(coli);
-			for (int i=0,ie=col.size();i<ie;i++) {
-				int colj = col.keyAt(i);
-				out.println("  n"+coli+ " -> n" + colj + " [style=dotted] ;");
-			}
-		}
-		
-		boolean doRedArcs=true;
-		if (! doRedArcs) {
-			// named sets
-			for (Entry<String, Set<Integer>> ent : setDeclarations.entrySet()) {
-				out.println("  "+ent.getKey()+ " [color=blue] ;");
-				for (Integer i : ent.getValue()) {
-					out.println("  "+ent.getKey()+ " -> n" + i + " [color=blue] ;");				
-				}
-			}
-
-			// broken right now
-//			for (Rule rule : rules) {
-//				out.println("  "+rule.hide+ " -> " + rule.from + " [color=red] ;");							
+//	/**
+//	 * Accessor for user : the result of traversing the compilation units.
+//	 * @return
+//	 */
+//	public MatrixCol getComposeGraph() {
+//		if (composeGraph == null) {
+//			for (ITypeBinding type : types) {
+//				IPackageBinding pkg = type.getPackage();
+//				if (!packages.contains(pkg)) {
+//					packages.add(pkg);
+//					nodes.add(pkg);
+//				}
 //			}
-		} else {
-			for (Rule rule : rules) {
-				Set<Integer> from = new HashSet<>(rule.from);
-				Set<Integer> hide = new HashSet<>(rule.hide);
-				
-				from.removeAll(hide);
-				
-				for (Integer interloper : from) {
-					for (Integer secret : hide) {
-						if (useGraph.hasEdge(secret, interloper) || composeGraph.get(secret, interloper) != 0) {
-							out.println("  n"+interloper+ " -> n" + secret + " [color=red] ;");														
-						}
-					}
-				}
-			}
-		}
+//			composeGraph = new MatrixCol(nodes.size(), nodes.size());
+//			// containment edges
+//			for (IMethodBinding meth: methods) {
+//				int elt = findIndex(nodes, meth);
+//				int parent = findIndex(nodes, meth.getDeclaringClass());
+//				if (elt >= 0 && parent >= 0) {
+//					composeGraph.set(elt, parent, 1);
+//				}
+//			}
+//			for (IVariableBinding meth: attributes) {
+//				int elt = findIndex(nodes, meth);
+//				int parent = findIndex(nodes, meth.getDeclaringClass());
+//				if (elt >= 0 && parent >= 0) {
+//					composeGraph.set(elt, parent, 1);
+//				}
+//			}
+//			for (ITypeBinding type : types) {
+//				int elt = findIndex(nodes, type);
+//				int parent = findIndex(nodes, type.getPackage());
+//				if (elt >= 0 && parent >= 0) {
+//					composeGraph.set(elt, parent, 1);
+//				}
+//			}
+//		}
+//		return composeGraph;
+//	}
 
-		out.println("}");
-		out.close();
-	}
-
-	public void addErrorMarkers() throws JavaModelException, CoreException {
-		MatrixCol cgraph = getComposeGraph();
-		for (Rule rule : rules) {
-			Set<Integer> from = new HashSet<>(rule.from);
-			Set<Integer> hide = new HashSet<>(rule.hide);
-			
-			from.removeAll(hide);
-			
-			for (Integer interloper : from) {
-				for (Integer secret : hide) {
-					if (useGraph.hasEdge(secret, interloper)) {
-						List<ASTNode> explains = useGraph.getReasons(secret,interloper); 
-						for (ASTNode reason : explains) {
-							ASTNode root = reason.getRoot();
-							if (root.getNodeType() == ASTNode.COMPILATION_UNIT) {
-								CompilationUnit cu = (CompilationUnit) root;
-								IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker(IMarker.PROBLEM);
-								marker.setAttribute(IMarker.CHAR_START, reason.getStartPosition());
-								marker.setAttribute(IMarker.CHAR_END, reason.getStartPosition() + reason.getLength());
-								marker.setAttribute(IMarker.MESSAGE, "Violates Puck rule :"+ rule.text);
-								marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
-								marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
-							}
-						}
-					}
-				}
-			}
-		}
-
-	}
-	
-	public void addSetDeclaration(String name, Set<Integer> nodes) {
-		setDeclarations.put(name, nodes);
-	}
-	
-	public Set<Integer> getSetDeclaration (String name) {
-		return setDeclarations.getOrDefault(name, Collections.emptySet());
-	}
-	
-	
-	public static GraphBuilder collectGraph(List<CompilationUnit> parsedCu) {
-		// this holds the actual nodes, at their proper index. All nodes are here, this is the union of types+methods+attributes.
-		// packages are currently excluded from this list.
-		List<IBinding> nodes = new ArrayList<>();
-
-		// these separate lists of nodes by subtype also benefit from tighter type constraints, for refined analysis/use.
-		// they form a partion of nodes + packages.
-		List<IPackageBinding> packages = new ArrayList<>();
-		List<ITypeBinding> types = new ArrayList<>();
-		List<IMethodBinding> methods = new ArrayList<>();
-		List<IVariableBinding> attributes = new ArrayList<>();
-		
+	public static PuckGraph collectGraph(List<CompilationUnit> parsedCu) {
+		DependencyNodes nodes = new DependencyNodes();		
 		
 		// actual traversal to find all relevant nodes we will consider within the scope of our graph. 
 		for (CompilationUnit unit : parsedCu) {
@@ -361,96 +177,41 @@ public class GraphBuilder extends ASTVisitor {
 				@Override
 				public void endVisit(TypeDeclaration node) {
 					ITypeBinding itb = node.resolveBinding();
-					nodes.add(itb);
-					types.add(itb);
+					nodes.addType(itb);
 					for (MethodDeclaration meth : node.getMethods()) {
 						IMethodBinding mtb = meth.resolveBinding();
-						nodes.add(mtb);
-						methods.add(mtb);
+						nodes.addMethod(mtb);
 					}
 
 					for (FieldDeclaration att : node.getFields()) {
 						for (Object toc : att.fragments()) {
 							VariableDeclarationFragment vdf = (VariableDeclarationFragment) toc;
 							IVariableBinding ivb = vdf.resolveBinding();
-							nodes.add(ivb);
-							attributes.add(ivb);
+							nodes.addAttribute(ivb);
 						}
 					}
 					super.endVisit(node);
 				}
 
-				/**
-				 * Currently separately collecting package nodes. They are actually unused currently. 
-				 */
 				@Override
 				public void endVisit(PackageDeclaration node) {
-					IPackageBinding ipb = node.resolveBinding();
-					if (! packages.contains(ipb))
-						packages.add(ipb);
+					nodes.addPackage(node.resolveBinding());
 					super.endVisit(node);
 				}				
 			});
 		}
 		
-		System.out.println("Found " + nodes.size() + " nodes : " + printNodes(nodes));
+		System.out.println("Found " + nodes.size() + " nodes : " + nodes);
 		
 		// Now the graph builder; because it is stateful (it keeps track of which node is current owner) it is implemented as a separate Visitor class.
 		// Let's give it the context we have collected.
-		GraphBuilder gb = new GraphBuilder(nodes,packages,types,methods,attributes);
+		GraphBuilder gb = new GraphBuilder(nodes);
 		
 		// now build the graph dependency links.
 		for (CompilationUnit unit : parsedCu) {
 			unit.accept(gb);
 		}
-		return gb;
+		return gb.graph;
 	}
-
-	
-	private static class Rule {
-		public String text;
-		public final Set<Integer> hide;
-		public final Set<Integer> from;
-		public Rule(Set<Integer> hide, Set<Integer> from, String text) {
-			this.hide = hide;
-			this.from = from;
-			this.text = text;
-		}
-	}
-	public void addRule (Set<Integer> hide, Set<Integer> from, String text) {
-		this.rules.add (new Rule(hide,from, text));
-	}
-
-	
-	/**
-	 * Debug method used for printing graph in console mode.
-	 * @param nodes the list of nodes we built
-	 * @return a nice-ish String representation for these nodes.
-	 */
-	public static String printNodes(List<? extends IBinding> nodes) {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (IBinding b : nodes) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			if (b instanceof ITypeBinding) {
-				ITypeBinding tb = (ITypeBinding) b;
-				sb.append("TYPE:"+tb.getQualifiedName());				
-			} else if (b instanceof IMethodBinding) {
-				IMethodBinding mb = (IMethodBinding) b;
-				sb.append("METHOD:"+mb.getDeclaringClass().getQualifiedName()+ "::"  +mb);				
-			} else if (b instanceof IPackageBinding) {
-				IPackageBinding pb = (IPackageBinding) b;
-				sb.append("PACKAGE:"+pb.getName());
-			} else if (b instanceof IVariableBinding) {
-				IVariableBinding vb = (IVariableBinding) b;
-				sb.append("FIELD:"+vb.getDeclaringClass().getQualifiedName()+ "::"  +vb);
-			}
-		}
-		return sb.toString();		
-	}	
 
 }
