@@ -6,6 +6,11 @@
 	<artifactId>fr.lip6.puck.dsl.parent</artifactId>
 	<packaging>pom</packaging>
 
+	<!-- Tycho requires Maven 3 -->
+	<prerequisites>
+		<maven>3.1.0</maven>
+	</prerequisites>
+
 	<properties>
 		<xtextVersion>2.21.0</xtextVersion>
 		<mwe2Version>2.11.2</mwe2Version>
@@ -18,7 +23,7 @@
 		<platform-version-name>2020-03</platform-version-name>
 		
 		<!-- Tycho settings -->
-		<tycho-version>1.6.0</tycho-version>
+		<tycho-version>1.7.0</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
@@ -305,7 +310,7 @@
 
 		<repository>
 			<id>The central nexus</id>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>https://repo1.maven.org/maven2</url>
 		</repository>
 
 	</repositories>
