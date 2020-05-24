@@ -397,7 +397,7 @@
             <id>aggregate</id>
             <inherited>false</inherited>        
             <reports>
-              <report>aggregate-no-fork</report>
+              <report>aggregate</report>
             </reports>
           </reportSet>
           <reportSet>
