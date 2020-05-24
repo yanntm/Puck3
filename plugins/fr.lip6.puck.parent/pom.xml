@@ -403,7 +403,7 @@
           <reportSet>
             <id>default</id>
             <reports>
-              <report>aggregate-no-fork</report>
+              <report>javadoc</report>
             </reports>
           </reportSet>
         </reportSets>
