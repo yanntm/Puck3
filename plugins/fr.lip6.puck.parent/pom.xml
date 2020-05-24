@@ -297,17 +297,6 @@
 						<useUIHarness>false</useUIHarness>
 					</configuration>
 				</plugin>
-           <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
-            </plugin>
 
 			</plugins>
 		</pluginManagement>
@@ -408,14 +397,13 @@
             <id>aggregate</id>
             <inherited>false</inherited>        
             <reports>
-              <report>aggregate</report>
+              <report>aggregate-no-fork</report>
             </reports>
           </reportSet>
           <reportSet>
             <id>default</id>
             <reports>
-              <report>javadoc</report>
-              <report>aggregate</report>
+              <report>aggregate-no-fork</report>
             </reports>
           </reportSet>
         </reportSets>
