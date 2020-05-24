@@ -30,7 +30,8 @@ services:
  - xvfb
     
 script:
- - cd plugins/fr.lip6.puck.parent/  && mvn -e generate-sources install && cd -  
+ - cd plugins/fr.lip6.puck.parent/  && mvn -e generate-sources install site && mvn site:stage && cd -  
+ - mv plugins/fr.lip6.puck.parent/target/staging/apidocs plugins/fr.lip6.puck.dsl.parent/dsl/fr.lip6.puck.dsl.repository/target/repository
  - du -sh plugins/fr.lip6.puck.dsl.parent/dsl/fr.lip6.puck.dsl.repository/target/repository
 
 
