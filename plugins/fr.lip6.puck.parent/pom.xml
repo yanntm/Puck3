@@ -401,7 +401,7 @@
               <head>Model.</head>
             </tag>
           </tags>
-		<excludePackageNames>*.impl.*:*.impl</excludePackageNames>
+		<excludePackageNames>com.android.internal.util:libcore.util:fr.lip6.puck.dsl.ide:fr.lip6.puck.dsl.parser:fr.lip6.puck.dsl.validation:fr.lip6.puck.dsl.scoping:fr.lip6.puck.dsl.ui:fr.lip6.puck.dsl.services:fr.lip6.puck.dsl.serilizer:*.impl.*:*.impl</excludePackageNames>
 		<doclint>none</doclint>
 	</configuration>        
         <reportSets>
