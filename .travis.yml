@@ -7,10 +7,7 @@ install: true
 #  - consult('test2.pro').
 
 jdk:
- - openjdk8
-
-# due to absence of rt.jar and others, code broken for Java >= 9 
-# - openjdk11
+ - openjdk11
 
 
 language: java
