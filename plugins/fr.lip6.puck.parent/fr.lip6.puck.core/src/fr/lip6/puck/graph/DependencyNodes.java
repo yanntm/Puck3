@@ -10,6 +10,13 @@ import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 
+
+/**
+ * The set of nodes in a Puck dependency graph : packages, types, methods and attributes.
+ * 
+ * @author Yann
+ *
+ */
 public class DependencyNodes {
 	// this holds the actual nodes, at their proper index. All nodes are here, this is the union of types+methods+attributes+ packages.
 	private List<IBinding> nodes = new ArrayList<>();
@@ -123,6 +130,10 @@ public class DependencyNodes {
 		return sb.toString();		
 	}
 
+	/**
+	 * Dot format export of the set of nodes, with some custom shapes.
+	 * @param out where we need to write.
+	 */
 	public void dotExport(PrintWriter out) {
 		int index = 0;
 		for (IBinding elt : nodes) {

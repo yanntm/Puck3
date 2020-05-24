@@ -15,7 +15,17 @@ import org.eclipse.jdt.core.dom.IBinding;
 
 import java.util.Map.Entry;
 
-
+/**
+ * The PuckGraph is the central operational Puck graph model object.
+ * 
+ * It stores : the nodes of the graph (as DependencyNodes), the "use" graph
+ *  and the "composition" graphs (as DependencyGraph), the named set declarations
+ *  parsed to a set of integer indexes, the Puck rules resolved to a "hide" and
+ *  a "from" set of integer indexes.
+ *   
+ * @author Yann
+ *
+ */
 public class PuckGraph {
 	private Map<String,Set<Integer>> setDeclarations = new HashMap<>();
 	private List<Rule> rules = new ArrayList<>();

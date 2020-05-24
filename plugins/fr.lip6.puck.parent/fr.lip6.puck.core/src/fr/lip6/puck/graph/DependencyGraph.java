@@ -14,6 +14,14 @@ import android.util.SparseIntArray;
 import fr.lip6.move.gal.util.GraphUtils;
 import fr.lip6.move.gal.util.MatrixCol;
 
+/**
+ * A dependency graph, i.e. a set of edges relating nodes of a DependencyNodes instance.
+ * 
+ * For each edge we also store a set of "reasons", that is a set of syntactic elements
+ * that induced that edge for diagnosis.
+ * @author Yann
+ *
+ */
 public class DependencyGraph {
 	private MatrixCol graph;
 	private Map<Integer,Map<Integer,List<ASTNode>>> reasons = new HashMap<>();

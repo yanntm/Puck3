@@ -11,6 +11,12 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import fr.lip6.puck.graph.PuckGraph;
 import fr.lip6.puck.graph.PuckGraph.Rule;
 
+/**
+ * This utility class manages building actual markers corresponding 
+ * to the information computed in a PuckGraph.
+ * @author Yann
+ *
+ */
 public class ProblemMarkerManager {
 
 	public static void addErrorMarkers(PuckGraph graph) throws JavaModelException, CoreException {

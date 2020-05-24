@@ -16,7 +16,12 @@ import fr.lip6.puck.parse.GraphBuilder;
 import fr.lip6.puck.parse.JavaParserHelper;
 import fr.lip6.puck.parse.PuckInterpreter;
 
-//@SuppressWarnings("restriction") // yes, AbstractCleanup is kind of internal API to JDT, but for this use case it's fine.
+/**
+ * This "Source->Cleanup" action actually generates a dot graph at root of project.
+ * @author Yann
+ *
+ */
+@SuppressWarnings("restriction") // yes, AbstractCleanup is kind of internal API to JDT, but for this use case it's fine.
 public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 
 	@Override

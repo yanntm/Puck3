@@ -19,8 +19,24 @@ import fr.lip6.puck.dsl.puck.TypeReference;
 import fr.lip6.puck.dsl.serialization.SerializationUtil;
 import fr.lip6.puck.graph.PuckGraph;
 
+/**
+ * PuckInterpreter translates a PuckModel to operational rules on a PuckGraph.
+ * 
+ * Given a PuckGraph representing some sources, interpret a given PuckModel
+ * (i.e. content of a WLD file parsed throug Xtext) to add the set declarations
+ * and rules to te graph.
+ * 
+ * @author Yann
+ *
+ */
 public class PuckInterpreter {
 
+	/**
+	 * Find all .wld rule files in the project and read them int the graph.
+	 * @param project a Java project to scan
+	 * @param graph a graph to add rules to
+	 * @throws CoreException if some file/resource issue happens.
+	 */
 	public static void findAndParsePuckFiles(IJavaProject project, PuckGraph graph) throws CoreException {
 		JavaParserHelper.findRuleFiles(project, member -> {
 			PuckModel pm  = SerializationUtil.resourceToPuckModel(member);
@@ -29,16 +45,22 @@ public class PuckInterpreter {
 		});
 	}
 
-	
+	/**
+	 * For a given PuckModel (a rule file), do the treatment.
+	 * @param pm
+	 * @param graph
+	 */
 	private static void parsePuckModel (PuckModel pm, PuckGraph graph) {
+		// parse all named set declarations
 		for (SetDeclaration set : pm.getNamedSets()){
-			Set<Integer> nodes = parseSetDeclaration(graph, set.getDef());
+			Set<Integer> nodes = parseSetDefinition(graph, set.getDef());
 			graph.addSetDeclaration(set.getName(), nodes);
 		}
+		// deal with rules
 		// System.out.println("Parsed " + sets);
 		for (Rule rule : pm.getRules()) {
-			Set<Integer> from = parseSetDeclaration(graph, rule.getFrom());
-			Set<Integer> hide = parseSetDeclaration(graph, rule.getHide());
+			Set<Integer> from = parseSetDefinition(graph, rule.getFrom());
+			Set<Integer> hide = parseSetDefinition(graph, rule.getHide());
 			// semantics is we don't hide from ourselves
 			from.removeAll(hide);
 			if (! from.isEmpty() && ! hide.isEmpty()) {
@@ -47,7 +69,13 @@ public class PuckInterpreter {
 		}
 	}
 	
-	private static Set<Integer> parseSetDeclaration(PuckGraph graph, SetDefinition sdef) {
+	/**
+	 * Treat a SetDefinition, i.e. compute resulting set from (nodes setminus except). 
+	 * @param graph context we are working in
+	 * @param sdef the set definition we want a resolved set for
+	 * @return the set of indexes of the nodes in this SetDefinition
+	 */
+	private static Set<Integer> parseSetDefinition(PuckGraph graph, SetDefinition sdef) {
 		Set<Integer> nodes = new HashSet<>();
 		collectSet(graph, sdef.getNodes(), nodes);
 		
@@ -59,6 +87,12 @@ public class PuckInterpreter {
 		return nodes;
 	}
 
+	/**
+	 * Interpret a set of NodeReference to a set of integer index.
+	 * @param graph the context
+	 * @param set the set we are looking at
+	 * @param nodes we should add all nodes found to this set.
+	 */
 	private static void collectSet(PuckGraph graph, NodeSet set, Set<Integer> nodes) {
 		for (NodeReference elt : set.getNodes()) {
 			if (elt instanceof TypeReference) {

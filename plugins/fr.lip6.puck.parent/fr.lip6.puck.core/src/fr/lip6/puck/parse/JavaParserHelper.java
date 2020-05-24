@@ -20,6 +20,11 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTRequestor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
+/**
+ * Helper utility class to navigate a Java project and collect its content.
+ * @author Yann
+ *
+ */
 public class JavaParserHelper {
 
 	/**

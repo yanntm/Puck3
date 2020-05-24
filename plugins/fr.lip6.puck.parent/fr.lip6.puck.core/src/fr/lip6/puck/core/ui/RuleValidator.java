@@ -19,6 +19,12 @@ import fr.lip6.puck.parse.GraphBuilder;
 import fr.lip6.puck.parse.JavaParserHelper;
 import fr.lip6.puck.parse.PuckInterpreter;
 
+/**
+ * This action is registered to be called on each recompilation, and will
+ * generate the error markers corresponding to rule violations.
+ * @author Yann
+ *
+ */
 public class RuleValidator extends CompilationParticipant {
 
 	public RuleValidator() {
