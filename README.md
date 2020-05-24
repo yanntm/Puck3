@@ -5,5 +5,5 @@ Update site for latest release : https://yanntm.github.io/Puck3/updates
 
 Javadoc of the API : https://yanntm.github.io/Puck3/apidocs
 
-Puck Metamodel : ![Metamodel](metmodel.jpg)
+Puck Metamodel : ![Metamodel](metamodel.jpg)
 
