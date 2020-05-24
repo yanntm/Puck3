@@ -401,7 +401,7 @@
               <head>Model.</head>
             </tag>
           </tags>
-		<excludePackageNames>fr.lip6.puck.dsl.ui:fr.lip6.puck.dsl.ide:fr.lip6.puck.dsl.*:*.impl.*:*.impl</excludePackageNames>
+		<excludePackageNames>*.impl.*:*.impl</excludePackageNames>
 		<doclint>none</doclint>
 	</configuration>        
         <reportSets>
