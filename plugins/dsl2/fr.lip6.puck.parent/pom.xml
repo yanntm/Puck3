@@ -291,16 +291,41 @@
 						<useUIHarness>false</useUIHarness>
 					</configuration>
 				</plugin>
-           <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
+				      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-javadoc-plugin</artifactId>
+	<version>3.2.0</version>
+	<configuration>
+		<failOnError>false</failOnError>
+		<tags>
+			<tag>
+				<name>generated</name>
+				<placement>X</placement>
+				<head>Generated EMF File.</head>
+			</tag>
+			<tag>
+				<name>ordered</name>
+				<placement>X</placement>
+				<head>Ordered.</head>
+			</tag>
+			<tag>
+				<name>model</name>
+				<placement>X</placement>
+				<head>Model.</head>
+			</tag>
+		</tags>
+		<excludePackageNames>fr.lip6.puck.dsl.ui:fr.lip6.puck.dsl.ide:fr.lip6.puck.dsl.*:*.impl.*:*.impl</excludePackageNames>
+		<doclint>none</doclint>
+	</configuration>
+	<executions>
+		<execution>
+			<goals>
+				<goal>javadoc</goal>
+				<goal>test-javadoc</goal>
+			</goals>
+			<phase>site</phase>
+		</execution>
+	</executions>		
             </plugin>
 
 			</plugins>
