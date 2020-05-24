@@ -31,18 +31,18 @@
 		<additionalTestArguments></additionalTestArguments>
 	</properties>
 	<modules>
-		<module>fr.lip6.puck.dsl</module>
-		<module>fr.lip6.puck.dsl.ide</module>
-		<module>fr.lip6.puck.dsl.ui</module>
-		<module>fr.lip6.puck.dsl.target</module>
+		<module>dsl/fr.lip6.puck.dsl</module>
+		<module>dsl/fr.lip6.puck.dsl.ide</module>
+		<module>dsl/fr.lip6.puck.dsl.ui</module>
+		<module>dsl/fr.lip6.puck.dsl.target</module>
 		
-		<module>../../fr.lip6.puck.util</module>
-		<module>../../fr.lip6.puck.core</module>
+		<module>fr.lip6.puck.util</module>
+		<module>fr.lip6.puck.core</module>
 		
-		<module>fr.lip6.puck.dsl.feature</module>
-		<module>fr.lip6.puck.dsl.repository</module>
-<!-- 		<module>fr.lip6.puck.dsl.tests</module>
-		<module>fr.lip6.puck.dsl.ui.tests</module>
+		<module>dsl/fr.lip6.puck.dsl.feature</module>
+		<module>dsl/fr.lip6.puck.dsl.repository</module>
+<!-- 		<module>dsl/fr.lip6.puck.dsl.tests</module>
+		<module>dsl/fr.lip6.puck.dsl.ui.tests</module>
  -->	</modules>
 	<dependencyManagement>
 		<dependencies>

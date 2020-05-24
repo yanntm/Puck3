@@ -34,14 +34,14 @@ services:
     
 script:
  - cd plugins/fr.lip6.puck.parent/  && mvn -e generate-sources install && cd -  
- - du -sh plugins/fr.lip6.puck.dsl.parent/fr.lip6.puck.dsl.repository/target/repository
+ - du -sh plugins/fr.lip6.puck.dsl.parent/dsl/fr.lip6.puck.dsl.repository/target/repository
 
 
 deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
-  local_dir: plugins/fr.lip6.puck.parent/fr.lip6.puck.dsl.repository/target/repository
+  local_dir: plugins/fr.lip6.puck.parent/dsl/fr.lip6.puck.dsl.repository/target/repository
   on:
     branch: master
 
