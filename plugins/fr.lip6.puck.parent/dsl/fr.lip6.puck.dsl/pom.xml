@@ -9,6 +9,8 @@
 	</parent>
 	<artifactId>fr.lip6.puck.dsl</artifactId>
 	<packaging>eclipse-plugin</packaging>
+  <name>Puck DSL for WLD rules</name>
+  <description>Xtext based DSL for Puck hide rules.</description>
 
 	<build>
 		<plugins>
