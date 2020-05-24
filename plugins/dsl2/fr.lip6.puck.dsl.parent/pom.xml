@@ -291,6 +291,18 @@
 						<useUIHarness>false</useUIHarness>
 					</configuration>
 				</plugin>
+           <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -343,6 +355,68 @@
 			</properties>
 		</profile>
 	</profiles>
+
+<reporting>
+
+    <plugins>
+           <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+	<configuration>
+	<failOnError>false</failOnError>
+	<tags>
+            <tag>
+              <name>generated</name>
+              <placement>X</placement>
+              <head>Generated EMF File.</head>
+            </tag>
+            <tag>
+              <name>ordered</name>
+              <placement>X</placement>
+              <head>Ordered.</head>
+            </tag>
+            <tag>
+              <name>model</name>
+              <placement>X</placement>
+              <head>Model.</head>
+            </tag>
+          </tags>
+		<excludePackageNames>fr.lip6.puck.dsl.ui:fr.lip6.puck.dsl.ide:fr.lip6.puck.dsl.*:*.impl.*:*.impl</excludePackageNames>
+		<doclint>none</doclint>
+	</configuration>        
+        <reportSets>
+          <reportSet>
+            <id>aggregate</id>
+            <inherited>false</inherited>        
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>default</id>
+            <reports>
+              <report>javadoc</report>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+    
+  </reporting>
 
 	<dependencies>
 	</dependencies>
