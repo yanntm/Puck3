@@ -2,15 +2,27 @@ grammar fr.lip6.puck.dsl.Puck with org.eclipse.xtext.xbase.Xbase
 
 import "http://www.eclipse.org/xtext/common/JavaVMTypes" as jvmTypes
 
+/**
+ * A DSL to express "hide rules" for the tool Puck.
+ */
 generate puck "http://www.lip6.fr/puck/dsl/Puck"
 
+/**
+ * The PuckModel is the entry point of a .WLD file.
+ * It contains set declarations and rules.
+ */
 PuckModel:
 	(imports=XImportSection)?
 
 	(namedSets+=SetDeclaration
 	|	rules+=Rule)*;
 
-
+/**
+ * A Rule defines two sets of nodes : hide and from.
+ * 
+ * The semantics is that if an edge links a node in from 
+ * to a node in (hide setminus from) this is a violation. 
+ */
 Rule:
 	'hide'
 	hide=SetDefinition
@@ -19,15 +31,32 @@ Rule:
 	';'
 ;
 
+/**
+ * A SetDefinition includes two parts : a positive set of nodes, and an optional
+ * except set of nodes.
+ * Semantics is that you remove (setminus) the nodes cited in the "except" clause
+ *  from "nodes" to obtain the actual set of nodes defined by this definition.  
+ */
 SetDefinition :
 	nodes=NodeSetOrAll
 	( 'except' except=NodeSet )? 
 ;
 
+/**
+ * A SetDeclaration allows to give an alias or name to a set declaration,
+ * easing it's reuse in both rules and other set declarations.
+ */
 SetDeclaration:
 	name=ID '='  def=SetDefinition ';'	
 ;
 
+/**
+ * A set of node references, the core ingredient of a SetDefinition.
+ * 
+ * The node references each refer to one or more nodes.
+ * Semantics is always that referring to a node actually includes
+ * all its descendants (subtree rooted in that node) in terms of composition. 
+ */
 NodeSet :
 	('[' nodes+=NodeReference (',' nodes+=NodeReference)* ']')	
 	| nodes+=NodeReference 		
@@ -39,22 +68,37 @@ NodeSetOrAll returns NodeSet:
 	| nodes+=AllReference
 ;
 
+/**
+ * Abstract class for the various types of node references.
+ */
 NodeReference:
 	PackageReference | TypeReference | SetReference // | FieldReference | MethodReference
 ;
 
+/**
+ * A reference to an existing named set declaration.
+ */
 SetReference:
 	ref=[SetDeclaration] 
 ;
 
+/**
+ * All the nodes in the graph.
+ */
 AllReference returns NodeReference:{AllReference}
 	'all'
 ;
 
+/**
+ * A reference to a type (class or interface).
+ */
 TypeReference:
   'type' type=JvmTypeReference
 ;
 
+/**
+ * A reference to a package.
+ */
 PackageReference:
   'pkg' package=QualifiedName
 ;
