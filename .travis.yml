@@ -27,7 +27,7 @@ script:
  - cd plugins/fr.lip6.puck.parent/  && mvn -e generate-sources install && cd -
  - mkdir website
  - cp -r plugins/fr.lip6.puck.parent/dsl/fr.lip6.puck.dsl.repository/target/repository website/updates  
- - cd plugins/fr.lip6.puck.parent/ && mvn -e generate-sources site site:stage && cd -
+ - cd plugins/fr.lip6.puck.parent/ && mvn -e generate-sources install site && mvn -e site:stage && cd -
  - cp -r plugins/fr.lip6.puck.parent/target/staging/apidocs website/
  - du -sh website/
 
