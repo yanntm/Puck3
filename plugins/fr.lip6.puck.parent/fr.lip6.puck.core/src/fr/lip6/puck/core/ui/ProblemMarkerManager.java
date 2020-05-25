@@ -8,6 +8,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
+import android.util.SparseIntArray;
+import fr.lip6.puck.graph.DependencyGraph;
 import fr.lip6.puck.graph.PuckGraph;
 import fr.lip6.puck.graph.PuckGraph.Rule;
 
@@ -21,23 +23,50 @@ public class ProblemMarkerManager {
 
 	public static void addErrorMarkers(PuckGraph graph) throws JavaModelException, CoreException {
 		for (Rule rule : graph.getRules()) {
-			
+
+			SparseIntArray tohide = new SparseIntArray();
+			for (int index : rule.hide) {
+				tohide.put(index, 1);
+			}
+
 			for (Integer interloper : rule.from) {
-				for (Integer secret : rule.hide) {
-					if (graph.getUseGraph().hasEdge(secret, interloper)) {
-						List<ASTNode> explains = graph.getUseGraph().getReasons(secret,interloper); 
-						addMarker(explains, "Violates Puck rule :"+ rule.text);
-					}
-					if (graph.getComposeGraph().hasEdge(secret, interloper)) {
-						List<ASTNode> explains = graph.getUseGraph().getReasons(secret,interloper); 
-						addMarker(explains, "Violates Puck containment rule :"+ rule.text);
-					}
-				}
+				addViolations(graph.getUseGraph(), ("Violates Puck rule :"+ rule.text).replaceAll("\n", ""), tohide, interloper);
+				addViolations(graph.getComposeGraph(), ("Violates Puck containment rule :"+ rule.text).replaceAll("\n", ""), tohide, interloper);				
 			}
 		}
-	
 	}
 
+
+	private static void addViolations(DependencyGraph dg, String message, SparseIntArray tohide, int interloper) throws CoreException {
+		SparseIntArray arcs = dg.getGraph().getColumn(interloper);
+		forEachIntersect(tohide, arcs, interloper, dg, message);
+	}
+	
+    public static void forEachIntersect (SparseIntArray s1, SparseIntArray s2, int interloper, DependencyGraph dg, String message) throws CoreException {
+    	if (s1.size() == 0 || s2.size() == 0) {
+			return;
+		}				
+		
+		for (int j = 0, i = 0 , ss1 =  s1.size() , ss2 = s2.size() ; i < ss1 && j < ss2 ; ) {
+			int sk1 = s1.keyAt(i); 
+			int sk2 = s2.keyAt(j); 
+			if (sk1 == sk2) {
+				// do it
+				List<ASTNode> explains = dg.getReasons(sk1,interloper); 
+				addMarker(explains, message);
+				// end action
+				i++;
+				j++;
+			} else if (sk1 > sk2) {
+				j++;
+			} else {
+				i++;
+			}
+		}
+    }
+
+	
+	
 	private static void addMarker(List<ASTNode> explains, String message) throws CoreException, JavaModelException {
 		for (ASTNode reason : explains) {
 			ASTNode root = reason.getRoot();

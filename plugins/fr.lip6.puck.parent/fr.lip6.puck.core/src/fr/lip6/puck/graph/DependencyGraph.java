@@ -38,6 +38,10 @@ public class DependencyGraph {
 		GraphUtils.collectSuffix(nodes, graph);
 	}
 	
+	
+	public MatrixCol getGraph() {
+		return graph;
+	}
 	public void dotExport(PrintWriter out, String style) {
 		for (int coli=0,colie=graph.getColumnCount(); coli<colie;coli++ ) {
 			SparseIntArray col = graph.getColumn(coli);
