@@ -36,6 +36,7 @@ public class PuckGraph {
 	public PuckGraph(DependencyNodes nodes) {
 		this.nodes = nodes;
 		this.useGraph = new DependencyGraph(nodes.size());
+		this.composeGraph = new DependencyGraph(nodes.size());
 	}
 
 	public DependencyGraph getUseGraph() {
