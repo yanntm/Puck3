@@ -147,7 +147,7 @@ public final class GraphBuilder  {
 			ITypeBinding type = node.resolveBinding();
 			// is there a containment edge ?
 			int cur = graph.getNodes().findIndex(type);
-			if (!currentOwner.isEmpty()) {
+			if (!currentOwner.isEmpty() && cur != -1) {
 				graph.getComposeGraph().addEdge(cur, currentOwner.peek(), node);
 			}
 			// also add that this is contained in its package
@@ -170,7 +170,7 @@ public final class GraphBuilder  {
 		@Override
 		public boolean visit(MethodDeclaration node) {
 			int cur = graph.getNodes().findIndex(node.resolveBinding());
-			if (!currentOwner.isEmpty()) {
+			if (!currentOwner.isEmpty() && cur != -1) {
 				graph.getComposeGraph().addEdge(cur, currentOwner.peek(), node);
 			}
 			currentOwner.push(cur);
@@ -189,7 +189,7 @@ public final class GraphBuilder  {
 		public boolean visit(VariableDeclarationFragment node) {
 			if (node.getParent() instanceof FieldDeclaration) {
 				int cur = graph.getNodes().findIndex(node.resolveBinding());
-				if (!currentOwner.isEmpty()) {
+				if (!currentOwner.isEmpty() && cur != -1) {
 					graph.getComposeGraph().addEdge(cur, currentOwner.peek(), node);
 				}
 				currentOwner.push(cur);
