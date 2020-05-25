@@ -28,7 +28,7 @@ public class ProblemMarkerManager {
 						List<ASTNode> explains = graph.getUseGraph().getReasons(secret,interloper); 
 						addMarker(explains, "Violates Puck rule :"+ rule.text);
 					}
-					if (graph.getUseGraph().hasEdge(secret, interloper)) {
+					if (graph.getComposeGraph().hasEdge(secret, interloper)) {
 						List<ASTNode> explains = graph.getUseGraph().getReasons(secret,interloper); 
 						addMarker(explains, "Violates Puck containment rule :"+ rule.text);
 					}
