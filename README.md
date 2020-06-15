@@ -23,5 +23,13 @@ Réponse : on détecte des incohérences et on fait l'évolution du code client 
 DIP : on peut imaginer une heuristique qui avertit quand une classe concrète est utilisée directement.
 Mikal : attention en fait cela ne pose souvent pas de problème, notamment quand la classe concrète n'est pas amenée à évoluer.
 Il y aurait donc beaucoup de faux positifs.
+Il faudrait au moins enrichir la notion de concret/abstrait avec d'autres cas. nombre magique, code vs fonction, attributs vs classe, classe vs interface, if vs polymorphisme (replace condtionnal polymorphism)...
+Prévoir des refectoring pour corriger ces erreurs typiques.
+
+
+Trouver des arguments pour répondre à la critique attendue : si on connait les axes de changements pourquoi utiliser puck vu qu'alors je peux coder proprement.
+Argument 1 : code decay. D'autres personnes voire le développeur initial peuvent par mégarde ou méconnaissance ne pas respecter les contraintes architecturales et abimer peu à peu l'architecture. L'outil permet à ton instant un audit pour détecter tout souci voire proposer des corrections.
+Argument 2 : évolutions des besoins. A un moment donné telle architecture convient parce qu'on ne sait pas que tel aspect va changer. Quand on est prévenu il faut remanier l'architecture.
+Argument 3 : 
 
 On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propositions en fonction des hypothèses sur les changements.
