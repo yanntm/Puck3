@@ -29,14 +29,13 @@ Prévoir des refectoring pour corriger ces erreurs typiques.
 
 Trouver des arguments pour répondre à la critique attendue : si on connait les axes de changements pourquoi utiliser puck vu qu'alors je peux coder proprement.
 
-Argument 1 : code decay. D'autres personnes voire le développeur initial peuvent par mégarde ou méconnaissance ne pas respecter les contraintes architecturales et abimer peu à peu l'architecture. L'outil permet à ton instant un audit pour détecter tout souci voire proposer des corrections.
+Argument 1 : code decay. D'autres personnes voire le développeur initial peuvent par mégarde ou méconnaissance ne pas respecter les contraintes architecturales et abimer peu à peu l'architecture. L'outil permet à ton instant un audit pour détecter tout souci voire proposer des corrections. Les règles documentent aussi certaines hypothèses et contraintes pour les nouveaux dans l'équipe de développement.
 
 Argument 2 : évolutions des besoins. A un moment donné telle architecture convient parce qu'on ne sait pas que tel aspect va changer. Quand on est prévenu il faut remanier l'architecture.
 
 Argument 3 : c'est beaucoup plus facile de déclarer des axes de changement (ensembles weland) que de respecter des contraintes tout le temps.
 
-Argument 4 : le fait d'expliciter les axes de changement permet justement d'en prendre conscience et de les respecter. Ceci est un argument pour la démarche que pour l'outil. Ca document aussi certaines hypothèses et contraintes pour les nouveaux dans l'équipe de développement.
-
+Argument 4 : le fait d'expliciter les axes de changement permet justement d'en prendre conscience et de les respecter. Ceci est un argument pour la démarche que pour l'outil. 
 Argument 4 bis : comparaison avec l'encapsulation. Tout le monde sait qu'il faut cacher les attributs d'une classe (les déclarer privés) mais le fait de les déclarer et que le compilateur fasse recpecter l'encapsulation est un vrai plus.
 
 On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propositions en fonction des hypothèses sur les changements.
