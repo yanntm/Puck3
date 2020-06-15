@@ -35,4 +35,6 @@ Argument 2 : évolutions des besoins. A un moment donné telle architecture conv
 
 Argument 3 : c'est beaucoup plus facile de déclarer des axes de changement (ensembles weland) que de respecter des contraintes tout le temps.
 
+Arguement 4 : le fait d'expliciter les axes de changement permet justement d'en prendre conscience et de les respecter.
+
 On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propositions en fonction des hypothèses sur les changements.
