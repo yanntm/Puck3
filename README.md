@@ -37,4 +37,6 @@ Argument 3 : c'est beaucoup plus facile de déclarer des axes de changement (ens
 
 Arguement 4 : le fait d'expliciter les axes de changement permet justement d'en prendre conscience et de les respecter. Ceci est un argument pour la démarche que pour l'outil.
 
+Arguement 5 : comparaison avec l'encapsulation. Tout le monde sait qu'il faut cacher les attributs d'une classe (les déclarer privés) mais le fait que le compilateur le vérifie est un vrai plus.
+
 On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propositions en fonction des hypothèses sur les changements.
