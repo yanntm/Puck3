@@ -24,4 +24,4 @@ DIP : on peut imaginer une heuristique qui avertit quand une classe concrète es
 Mikal : attention en fait cela ne pose souvent pas de problème, notamment quand la classe concrète n'est pas amenée à évoluer.
 Il y aurait donc beaucoup de faux positifs.
 
-On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propostions en fonction des hypothèses sur les changements.
+On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propositions en fonction des hypothèses sur les changements.
