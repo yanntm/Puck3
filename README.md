@@ -41,3 +41,41 @@ Argument 4 : le fait d'expliciter les axes de changement permet justement d'en p
 Argument 4 bis : comparaison avec l'encapsulation. Tout le monde sait qu'il faut cacher les attributs d'une classe (les déclarer privés) mais le fait de les déclarer et que le compilateur fasse recpecter l'encapsulation est un vrai plus.
 
 On peut donc imaginer un niveau basique sans connaissance a priori sur les changements et un niveau plus avancé où l'outil affine ses remarques et propositions en fonction des hypothèses sur les changements.
+
+# réunion du 15 octobre
+
+Détecter les cycles entre les paquetages eventuellement entre les classes.
+
+Ecrire un papier. Valeur ajoutée = ?
+Si on sait ce qu'on veut tout va bien mais comment amorcer la pompe ?
+Des règles génériques ?
+Exemple : cacher les paquetages .impl de tout le monde
+
+Les règles sont elles bien audibles ?
+Pourquoi se sert-on de Puck ?
+paradoxe : pour ecrire les règles il faut déjà savoir ce qu'on veut
+
+hypothèse : les clients sont capables d'écire les règles puck
+patterns de règles  comme no cycle in ...
+proposer architecture layered
+
+études kata solid ou refactoring
+https://kata-log.rocks/gilded-rose-kata
+https://github.com/emilybache/Racing-Car-Katas
+https://github.com/ivanbadia/solid-kata
+https://kata-log.rocks/solid-principles
+
+Mikal : il faut cacher ce qui bouge donc le client doit avoir une idée de ce qui bouge
+
+Petit point sur les exemples qui ont été déjà été travaillés et qui viennent souvent de design pattern
+Matrices : cacher les sortes de matrices
+
+Katas : le code de départ ne respecte pas les principes solid
+Q1 : peut on écrire les memes règles puck sur le système initial et final
+Issue : en fait souvent il faut remanier aussi les règles
+
+Question : classique en puck où placer les nouvelles classes parmis les ensembles déclarés ?
+
+voir comment exprimer les regles avec des modules.
+
+
