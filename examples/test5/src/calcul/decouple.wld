@@ -7,8 +7,9 @@ package = [ pkg calcul];
 mc = [ type MatriceCreuse ];
 mp = [ type MatricePleine];
 
-//hide mc from mp;
-///hide mp from mc;
+
+hide mc from mp;
+hide mp from mc;
 hide mp from all;
 //for (class : package) {
 //	if (class.getName().startsWith("Matrice")) {
@@ -16,5 +17,5 @@ hide mp from all;
 //	}
 //}
 
-//hide lesMatrices from lesMatrices;
-//hide mp from mc;
+hide lesMatrices from lesMatrices;
+hide mp from mc;
