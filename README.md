@@ -7,6 +7,12 @@ Javadoc of the API : https://yanntm.github.io/Puck3/apidocs
 
 Puck Metamodel : ![Metamodel](metamodel.jpg)
 
+# Mini réunion 5 novembre
+La classe Item est un POD (Plain Old Data) mais on n'a pas le droit de la modifier.
+
+Todo: écrire les règles weland pour faire respecter le cahhier des charges ci-dessous.
+https://github.com/emilybache/GildedRose-Refactoring-Kata/blob/master/GildedRoseRequirements.txt
+
 
 # réunion du 15 octobre
 
