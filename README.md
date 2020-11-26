@@ -7,6 +7,12 @@ Javadoc of the API : https://yanntm.github.io/Puck3/apidocs
 
 Puck Metamodel : ![Metamodel](metamodel.jpg)
 
+# Mini réunion 26 novembre
+hide type Item  from pkg gildedrose; // this has no effect
+
+
+
+
 # Mini réunion 5 novembre
 La classe Item est un POD (Plain Old Data) mais on n'a pas le droit de la modifier.
 
