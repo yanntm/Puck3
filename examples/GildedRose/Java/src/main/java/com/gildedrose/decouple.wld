@@ -1,0 +1,11 @@
+import com.gildedrose.*
+
+// this has no effect
+//hide type Item  from pkg gildedrose; 
+
+//hide type Item  from type GildedRose; 
+
+
+//hide Item.quality  from  all except pkg updaters
+//hide Item.sellIn  from  all except pkg updaters
+//hide Item.name  from  all except pkg updaters
