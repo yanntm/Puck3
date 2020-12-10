@@ -7,6 +7,25 @@ Javadoc of the API : https://yanntm.github.io/Puck3/apidocs
 
 Puck Metamodel : ![Metamodel](metamodel.jpg)
 
+# Rénion du 10 décembre
+Retour sur GildedRose
+
+discussion sur le refactoring automatique
+
+on cherche a mesurer l'impact d'un changement
+
+On est gêné pour exprimer la contrainte de couplage, notamment vis à vis de la granularité.
+
+Une méthode est un seul noeud alors qu'on doit remanier le code à l'intéreur.
+
+metrique de l'effort induit ?
+
+systeme de gestion de sources ?
+
+reutlisation vs modification
+
+faire une experience de comparaison en introduisant l'enchanted item avec ou sans refactoring prealable
+
 # Mini réunion 26 novembre
 hide type Item  from pkg gildedrose; // this has no effect
 
