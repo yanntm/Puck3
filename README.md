@@ -28,6 +28,8 @@ faire une experience de comparaison en introduisant l'enchanted item avec ou san
 
 Trouver un autre exemple de kata, matrice creuse/pleine ?
 
+Idée : contrainte specifiquement ce qui apparait dans les conditions (ex cacher name des conditionnelles dans gildedrose)
+
 # Mini réunion 26 novembre
 hide type Item  from pkg gildedrose; // this has no effect
 
