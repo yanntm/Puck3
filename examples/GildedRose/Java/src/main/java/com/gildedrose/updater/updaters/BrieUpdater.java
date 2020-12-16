@@ -1,4 +1,7 @@
-package com.gildedrose;
+package com.gildedrose.updater.updaters;
+
+import com.gildedrose.IItemUpdater;
+import com.gildedrose.Item;
 
 public class BrieUpdater implements IItemUpdater {
 	@Override

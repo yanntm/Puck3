@@ -1,4 +1,33 @@
 import com.gildedrose.*
+import com.gildedrose.updater.updaters.BrieUpdater
+import com.gildedrose.updater.updaters.BackstageUpdater
+import com.gildedrose.updater.updaters.LegendaryUpdater
+
+// on doit cacher les differentes sortes d'item 
+// et notamment Brie, sulfuras/legandaire, baskstage pass
+
+// item_kinds = [ Item.name, "Brie", "sulfuras", "baskstage pass"]
+
+// quality_updater = [Item.quality, Item.sellIn]
+
+// hide idem_kinds from quality_updater
+
+
+// IDEE : partition des instances d'items en fonction de criteres booleens
+// par exemple item.name.equals("sufuras")
+// ou item.sellIn <0
+// comment reifier cette partition pour remplacer les conditions par du polymorphisme
+
+
+concrete_updaters = [pkg updater.updaters];
+
+hide type BackstageUpdater from concrete_updaters;
+hide type BrieUpdater from concrete_updaters;
+hide type LegendaryUpdater from concrete_updaters;
+
+// hide Item.name 
+
+//implem = [Item.quality, Item.sellIn, Item.name];
 
 // this has no effect
 //hide type Item  from pkg gildedrose; 

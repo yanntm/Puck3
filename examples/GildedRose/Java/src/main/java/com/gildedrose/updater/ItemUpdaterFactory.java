@@ -1,4 +1,11 @@
-package com.gildedrose;
+package com.gildedrose.updater;
+
+import com.gildedrose.GenericUpdater;
+import com.gildedrose.IItemUpdater;
+import com.gildedrose.Item;
+import com.gildedrose.updater.updaters.BackstageUpdater;
+import com.gildedrose.updater.updaters.BrieUpdater;
+import com.gildedrose.updater.updaters.LegendaryUpdater;
 
 public class ItemUpdaterFactory {
 	public static IItemUpdater createUpdater(Item item) {
