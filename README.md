@@ -7,6 +7,119 @@ Javadoc of the API : https://yanntm.github.io/Puck3/apidocs
 
 Puck Metamodel : ![Metamodel](metamodel.jpg)
 
+# réunion du 22 janvier
+
+Envoie de la proposition de projet PSTL
+https://www.overleaf.com/project/60002a0945cfbf178e743542
+une étape du projet serait de simplifier du code présentant des conditions évaluables statiquement (true, false).
+
+Issue 1  :  représentation canonique des conditionnelles.
+
+Issue 2 : des condtions ne sont pas encore présentes. Voire il n'y en a pas encore. C'est un changement annoncé.
+Ex frais de livraison au poids ou au montant.
+
+Comment identifier les conditionnelles pertinentes.
+Selon un papier indien les conditions des champs d'une classe dit control field peuvent etre identifier.
+L'utilisateur pourrait fournir un ensemble de conditions booleennes (partition de preference)
+
+On peut imaginer plusieurs cases à cocher (variantes de RCP)
+sur la strategie par defaut,
+sur l'injection d'une strategie par le constructeur,
+sur l'injection par un setteur,
+
+Dans l'exemple ci-dessous
+if (modeLivraison.contentEquals("au poids")) {
+			if (poids < 1000)
+				return 5;
+			else  return poids / 100;
+		}
+		else if (modeLivraison.contentEquals("au montant")) {
+			if (montant > 100)
+				return 0;
+			else return 20;
+		}
+		else throw new IllegalArgumentException(modeLivraison);
+
+La suppression de l'attribut modeLivraison pourrait être un refactoring à part
+
+quelle signature pour la strategie (Objet initial ou données particulieres)
+
+Sur gildedRose on a du isoler la conditionnelle dans une méthode qui lui est propre*
+
+l'utilisateur se voit proposer la liste des tests booleens présent dans la conditionnelle
+et il sélectionne les cas d'une partition
+le code est alors réécrit
+on duplique la fonction en introduisant chaque cas
+
+
+# mail de Yann 13 janvier
+
+
+quelques traces d'une recherche biblio sur refactor to polymorphism.
+Je vous racontes le "gist" demain, c'est de la surface, i.e. une
+selection sur les résultats de google, pas encore une vraie biblio (refs
+de refs etc....).
+
+
+** la littérature citable
+Une "déf" par l'exemple (Fowler)
+https://refactoring.com/catalog/replaceConditionalWithPolymorphism.html
+
+Mais le livre "Refactoring" de Fowler en parles, j'ai pas le pdf
+
+Outil JDeodorant + volée de papiers (la compétition :D)
+https://github.com/tsantalis/JDeodorant
+les papiers sont cités sur cette page d'accueil github
+
+JDeodorant, un "concurrent" assez abouti sur les refactoring, mais c'est
+open source et relativement propre ce que j'ai browsé, donc on peut le
+hacker et s'appuyer dessus si on veut. C'est encore un peu actif et pas
+mal de contributor.
+
+dont ce papier en particulier sur ce sujet précis :
+http://users.encs.concordia.ca/~nikolaos/publications/JSS_2010.pdf
+
+plus récent là dessus (oopsla'18) et avec artefacts/outils
+Identifying Refactoring Opportunities for Replacing TypeCode with
+Subclass and State
+http://www.cse.iitm.ac.in/~vjyothi/oopsla18.pdf
+
+** intéressant car systématisé/suggère un "plan" de refactoring
+Approche pour introduire la réecriture:
+https://refactoring.guru/replace-conditional-with-polymorphism
+
+Donc on propose des plans de refactoring, ici on suggère de commencer
+par faire un Strategy avant de démarrer le pattern. L'approche est
+"systématisé" même si ce n'est pas formel.
+
+** Des tas d'exemples sur des blogs et autres, ici un ou deux choisis
+
+Exemple commenté :
+https://josdem.io/techtalk/refactoring/replace_conditional_with_polymorphism/
+
+avec les classes qui embarquent des attributs, i.e. les branches
+conditionnelles emmènent aussi des attributs.
+
+https://sergeyzhuk.me/2017/02/25/replace-conditionals/
+php, très classique switch/case => classes + factory qui garde le
+switch.
+
+Article 2005 : Refactor conditionals into polymorphism: what's the
+performance cost of introducing virtual calls?
+
+question intéressante en soi, mais article ancien
+
+un autre article sur le thème
+http://www.zndxzk.com.cn/down/2014/05_znen/31-1935-e132242.pdf
+Automated pattern­directed refactoring for complex conditional
+statements
+
+mais pas d'outil
+
+plus ancien mais pertinent ?
+Automated refactoring to the Strategy design pattern
+http://www2.aueb.gr/users/bzafiris/docs/cgzs12.pdf
+
 # Rénion du 10 décembre
 Retour sur GildedRose
 
