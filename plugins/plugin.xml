@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.refactoringContributions">
+      <contribution
+            class="refactoring.strategy.RefactoringContribution"
+            id="refactoring.strategy.contribution2">
+      </contribution>
+   </extension>
+
+</plugin>
