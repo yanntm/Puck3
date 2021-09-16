@@ -47,7 +47,7 @@ public class ExtractGraph extends AbstractCleanUp implements ICleanUp {
 		// let's build a graphviz file for it
 		try {
 			graph.exportDot(project.getProject().getLocation().toFile().getCanonicalPath() + "/graph.dot");
-			//refresh project
+			//refresh project 
 			project.getProject().refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());	
 		} catch (IOException e) {
 			e.printStackTrace();
