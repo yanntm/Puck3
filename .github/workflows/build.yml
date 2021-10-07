@@ -28,7 +28,7 @@ jobs:
     - name: Build with Maven
       run: cd plugins/fr.lip6.puck.parent/ && mvn -T 4 -e generate-sources install && cd -
     - name: copy plugins 
-      run: cp -r plugins/fr.lip6.puck.parent/dsl/fr.lip6.puck.dsl.repository/target/repository website/updates ; cd plugins/fr.lip6.puck.parent/ && mvn -e generate-sources install site && mvn -e site:stage && cd - ; cp -r plugins/fr.lip6.puck.parent/target/staging/apidocs website/
+      run: mkdir website ; cp -r plugins/fr.lip6.puck.parent/dsl/fr.lip6.puck.dsl.repository/target/repository website/updates ; cd plugins/fr.lip6.puck.parent/ && mvn -e generate-sources install site && mvn -e site:stage && cd - ; cp -r plugins/fr.lip6.puck.parent/target/staging/apidocs website/
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.5
       with:
