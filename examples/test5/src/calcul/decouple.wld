@@ -3,19 +3,19 @@ import calcul.*
 lesMatrices = [ type MatriceCreuse, type MatricePleine] ;
 test = [ type Calcul ] ;
 
-package = [ pkg calcul]; 
+lePackage = [ pkg calcul]; 
 mc = [ type MatriceCreuse ];
 mp = [ type MatricePleine];
 
 
-hide mc from mp;
-hide mp from mc;
-hide mp from all;
+//hide mc from mp;
+//hide mp from mc;
+//hide mp from all;
 //for (class : package) {
 //	if (class.getName().startsWith("Matrice")) {
 //		hide class from package;
 //	}
 //}
 
-hide lesMatrices from lesMatrices;
-hide mp from mc;
+hide lesMatrices from lePackage;
+//hide mp from mc;

@@ -15,4 +15,8 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.xtext,
  fr.lip6.puck.dsl,
  org.eclipse.xtext.common.types,
- fr.lip6.puck.util
+ fr.lip6.puck.util,
+ org.eclipse.jface.text;bundle-version="3.20.0"
+Import-Package: org.eclipse.jdt.core.refactoring,
+ org.eclipse.jdt.core.refactoring.descriptors,
+ org.eclipse.jdt.core.refactoring.participants

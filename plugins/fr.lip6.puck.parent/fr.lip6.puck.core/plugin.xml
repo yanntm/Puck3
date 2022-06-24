@@ -21,5 +21,34 @@
             modifiesEnvironment="false">
       </compilationParticipant>
    </extension>
-
+   <extension
+         point="org.eclipse.jdt.ui.quickFixProcessors">
+      <quickFixProcessor
+            class="fr.lip6.puck.core.PuckFix"
+            id="fr.lip6.puck.core.PuckFix"
+            name="PuckFix">
+         <handledMarkerTypes>
+            <markerType
+                  id="fr.lip6.puck.core.markerType1">
+            </markerType>
+         </handledMarkerTypes>
+      </quickFixProcessor>
+   </extension>
+<extension
+       id="fr.lip6.puck.core.violationMarker"
+       name="Rule violation"
+       point="org.eclipse.core.resources.markers">
+    <super
+          type="org.eclipse.jdt.core.problem">
+    </super>
+    <super
+          type="org.eclipse.core.resources.problemmarker">
+    </super>
+    <super
+          type="org.eclipse.core.resources.textmarker">
+    </super>
+    <persistent
+          value="true">
+    </persistent>
+ </extension>
 </plugin>
