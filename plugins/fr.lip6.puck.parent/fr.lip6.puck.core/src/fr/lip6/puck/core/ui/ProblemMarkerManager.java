@@ -91,7 +91,7 @@ public class ProblemMarkerManager {
 				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 				marker.setAttribute(IJavaModelMarker.ID, 666666);
-// begin add: using the rename refactoring on the marked cu
+// begin addition: using the rename refactoring on the marked cu
 				IJavaElement ije = cu.getJavaElement();
 				IJavaProject ijp = ije.getJavaProject();
 				RefactoringContribution contribution =
@@ -121,7 +121,7 @@ public class ProblemMarkerManager {
 				    // TODO Auto-generated catch block
 				    e.printStackTrace();
 				}
-// end add
+// end addition
 			}
 		}
 	}
