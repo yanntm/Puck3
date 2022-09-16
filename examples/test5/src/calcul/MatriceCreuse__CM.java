@@ -3,15 +3,15 @@ package calcul;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MatriceCreuse {
+public class MatriceCreuse__CM {
 	private Map<XY, Integer> elements;
 	private int hauteur ;
 	private int largeur;
 
-	public MatriceCreuse(int hauteur, int largeur) {
+	public MatriceCreuse__CM(int hauteur, int largeur) {
 		this.hauteur = hauteur;
 		this.largeur = largeur;
-		elements = new HashMap<XY, Integer>();
+		elements = new HashMap<>();
 	}
 
 	public int getLargeur() {

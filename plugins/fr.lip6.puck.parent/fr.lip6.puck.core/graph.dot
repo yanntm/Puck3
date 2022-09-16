@@ -1,0 +1,9 @@
+digraph  G {
+  n0 [shape=folder,label="fr.lip6.puck.core"];
+  n1 [shape=box,label="fr.lip6.puck.core.PuckFix"]
+  n2 [shape=octagon,label="fr.lip6.puck.core.PuckFix.hasCorrections"];
+  n3 [shape=octagon,label="fr.lip6.puck.core.PuckFix.getCorrections"];
+  n0 -> n1 [style=dotted] ;
+  n1 -> n2 [style=dotted] ;
+  n1 -> n3 [style=dotted] ;
+}

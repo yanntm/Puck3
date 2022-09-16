@@ -27,7 +27,7 @@ public class MatricePleine {
 		return tab[x - 1][y - 1];
 	}
 
-	public MatriceCreuse versCreuse() {
+	public  MatriceCreuse versCreuse() {
 		MatriceCreuse mc = new MatriceCreuse(getHauteur(), getLargeur());
 		for (int x = 1; x <= getHauteur(); ++x)
 			for (int y = 1; y <= getLargeur(); ++y)

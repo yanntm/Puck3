@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IJavaModelMarker;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.refactoring.IJavaRefactorings;
 import org.eclipse.jdt.core.refactoring.descriptors.RenameJavaElementDescriptor;
@@ -55,8 +56,8 @@ public class ProblemMarkerManager {
 		forEachIntersect(tohide, arcs, interloper, dg, message);
 	}
 
-    public static void forEachIntersect (SparseIntArray s1, SparseIntArray s2, int interloper, DependencyGraph dg, String message) throws CoreException {
-    	if (s1.size() == 0 || s2.size() == 0) {
+	public static void forEachIntersect (SparseIntArray s1, SparseIntArray s2, int interloper, DependencyGraph dg, String message) throws CoreException {
+		if (s1.size() == 0 || s2.size() == 0) {
 			return;
 		}
 
@@ -76,14 +77,14 @@ public class ProblemMarkerManager {
 				i++;
 			}
 		}
-    }
+	}
 
 	private static void addMarker(List<ASTNode> explains, String message) throws CoreException, JavaModelException {
 		for (ASTNode reason : explains) {
 			ASTNode root = reason.getRoot();
 			if (root.getNodeType() == ASTNode.COMPILATION_UNIT) {
 				CompilationUnit cu = (CompilationUnit) root;
-//				IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker(IMarker.PROBLEM);
+				//				IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker(IMarker.PROBLEM);
 				IMarker marker = cu.getJavaElement().getCorrespondingResource().createMarker("fr.lip6.puck.core.violationMarker");
 				marker.setAttribute(IMarker.CHAR_START, reason.getStartPosition());
 				marker.setAttribute(IMarker.CHAR_END, reason.getStartPosition() + reason.getLength());
@@ -91,39 +92,105 @@ public class ProblemMarkerManager {
 				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 				marker.setAttribute(IJavaModelMarker.ID, 666666);
-// begin addition: using the rename refactoring on the marked cu
-				IJavaElement ije = cu.getJavaElement();
-				IJavaProject ijp = ije.getJavaProject();
-				RefactoringContribution contribution =
-					    RefactoringCore.getRefactoringContribution(IJavaRefactorings .RENAME_COMPILATION_UNIT);
-				RenameJavaElementDescriptor descriptor =
-					    (RenameJavaElementDescriptor) contribution.createDescriptor();
-				descriptor.setProject(ijp.getElementName());
-				System.out.println("project = "+ijp.getElementName());
-				System.out.println("element = "+ije.getElementName());
-				descriptor.setNewName(ije.getElementName()+"___ZZZ"); // new name for a Class
-				descriptor.setJavaElement(ije);
-//				RenameRefactoringWizard rrw = new Ren;
-				RefactoringStatus status = new RefactoringStatus();
-				try {
-				    Refactoring refactoring = descriptor.createRefactoring(status);
-
-				    IProgressMonitor monitor = new NullProgressMonitor();
-				    refactoring.checkInitialConditions(monitor);
-				    refactoring.checkFinalConditions(monitor);
-				    Change change = refactoring.createChange(monitor);
-				    change.perform(monitor);
-
-				} catch (CoreException e) {
-				    // TODO Auto-generated catch block
-				    e.printStackTrace();
-				} catch (Exception e) {
-				    // TODO Auto-generated catch block
-				    e.printStackTrace();
-				}
-// end addition
+				rename(reason);
 			}
 		}
 	}
 
+
+	private static void rename(ASTNode reason) {
+		String reasonName = reason.toString();
+		System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")");
+		System.err.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")");
+		System.err.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")");
+		System.err.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")");
+		System.err.println("field access" + "("+ ASTNode.FIELD_ACCESS+")");
+		System.err.println("type declaration" + "("+ ASTNode.TYPE_DECLARATION+")");
+		System.err.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")");
+		System.err.println("reasonName = " + reasonName + " / " + "Reason NodeType = " + ASTNode.nodeClassForType(reason.getParent().getNodeType()).getSimpleName());
+		switch (reason.getParent().getNodeType()) {
+		case ASTNode.COMPILATION_UNIT : 
+			System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")" + reasonName);
+			break;
+		case ASTNode.METHOD_DECLARATION :
+			System.err.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")" + reasonName);
+			break;
+		case ASTNode.METHOD_INVOCATION : 
+			System.err.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")" + reasonName);
+			break;
+		case ASTNode.FIELD_DECLARATION : 
+			System.err.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")" + reasonName);
+			break;
+		case ASTNode.FIELD_ACCESS :  
+			System.err.println("field access" + "("+ ASTNode.FIELD_ACCESS+")" + reasonName);
+			break;
+		case ASTNode.TYPE_LITERAL :  
+			System.err.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")" + reasonName);
+			break;
+		case ASTNode.SIMPLE_TYPE :  
+			System.err.println("Simple type" + "("+ ASTNode.SIMPLE_TYPE+")" + reasonName);
+			RefactoringContribution contribution =
+					RefactoringCore.getRefactoringContribution(IJavaRefactorings.RENAME_TYPE);
+			RenameJavaElementDescriptor descriptor =
+					(RenameJavaElementDescriptor) contribution.createDescriptor();
+			descriptor.setNewName(reasonName+"__CM"); // new name for a Class
+			descriptor.setProject(((CompilationUnit) reason.getRoot()).getJavaElement().getElementName());
+			SimpleType treason = (SimpleType) reason.getParent();
+			System.err.println("treason = " + treason.toString());
+			descriptor.setJavaElement(treason.resolveBinding().getJavaElement());
+			RefactoringStatus status = new RefactoringStatus();
+			try {
+				Refactoring refactoring = descriptor.createRefactoring(status);
+
+				IProgressMonitor monitor = new NullProgressMonitor();
+				refactoring.checkInitialConditions(monitor);
+				refactoring.checkFinalConditions(monitor);
+				Change change = refactoring.createChange(monitor);
+				change.perform(monitor);
+
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+			break;
+		default :
+			System.err.println("No type?");
+		}
+//		if (reason.getNodeType() == ASTNode.COMPILATION_UNIT) {
+//		if (reason.getNodeType() == ASTNode.COMPILATION_UNIT) {
+//			String reasonName = reason.toString();
+//			IJavaElement ije = ((CompilationUnit) reason).getJavaElement();	
+//			IJavaProject ijp = ije.getJavaProject();
+//			System.err.println("ije = " + ije);
+//			System.err.println("ijp = " + ijp);
+//			RefactoringContribution contribution =
+//					RefactoringCore.getRefactoringContribution(IJavaRefactorings .RENAME_COMPILATION_UNIT);
+//			RenameJavaElementDescriptor descriptor =
+//					(RenameJavaElementDescriptor) contribution.createDescriptor();
+//			descriptor.setProject(ijp.getElementName());
+//			descriptor.setNewName(reasonName+"___ZZZ"); // new name for a Class
+//			descriptor.setJavaElement(ije);
+//			//				RenameRefactoringWizard rrw = new Ren;
+//			RefactoringStatus status = new RefactoringStatus();
+//			try {
+//				Refactoring refactoring = descriptor.createRefactoring(status);
+//
+//				IProgressMonitor monitor = new NullProgressMonitor();
+//				refactoring.checkInitialConditions(monitor);
+//				refactoring.checkFinalConditions(monitor);
+//				Change change = refactoring.createChange(monitor);
+//				change.perform(monitor);
+//
+//			} catch (CoreException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+	}
 }
