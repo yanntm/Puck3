@@ -13,25 +13,25 @@ public class MatriceFactory {
 		return new MatricePleine(hauteur, largeur);
 	}
 
-	
+
 	public static IMatrice createMatriceCreuse(IMatrice mat) {
 		IMatrice ret = createMatriceCreuse(mat.getHauteur(), mat.getLargeur());
-		copyTo(ret, mat);		
+		copyTo(ret, mat);
 		return ret;
 	}
 
 	public static IMatrice createMatricePleine(IMatrice mat) {
 		IMatrice ret = createMatricePleine(mat.getHauteur(), mat.getLargeur());
-		copyTo(ret, mat);		
+		copyTo(ret, mat);
 		return ret;
 	}
 
-	
+
 	private static void copyTo(IMatrice target, IMatrice source) {
 		for (int x = 1, hauteur=source.getHauteur(); x <= hauteur; ++x)
 			for (int y = 1, largeur=source.getLargeur(); y <= largeur; ++y)
 				target.set(x, y, source.get(x, y));
 	}
 
-	
+
 }

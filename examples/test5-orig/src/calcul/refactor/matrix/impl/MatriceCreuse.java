@@ -13,7 +13,7 @@ public class MatriceCreuse implements IMatrice {
 	public MatriceCreuse(int hauteur, int largeur) {
 		this.hauteur = hauteur;
 		this.largeur = largeur;
-		elements = new HashMap<XY, Integer>();
+		elements = new HashMap<>();
 	}
 
 	@Override

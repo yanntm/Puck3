@@ -29,7 +29,7 @@
             name="PuckFix">
          <handledMarkerTypes>
             <markerType
-                  id="fr.lip6.puck.core.markerType1">
+                  id="fr.lip6.puck.core.violationMarker">
             </markerType>
          </handledMarkerTypes>
       </quickFixProcessor>

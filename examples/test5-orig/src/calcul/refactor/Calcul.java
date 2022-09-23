@@ -5,8 +5,8 @@ import calcul.refactor.matrix.MatriceFactory;
 
 public class Calcul {
 	// sous ce seuil la matrice devrait etre creuse
-	private static final double seuilCreuse = 0.2; 
-	
+	private static final double seuilCreuse = 0.2;
+
 	private boolean creuse;
 	private IMatrice mat;
 

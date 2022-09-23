@@ -19,5 +19,5 @@ mp = [ type MatricePleine ];
 //	}
 //}
 
-//hide mc from mp;
-hide mp from mc;
+hide mc from all;
+//hide mp from mc;

@@ -9,7 +9,7 @@ notdecl = [ pkg calcul, pkg calcul.refactor, pkg calcul.refactor.matrix ] except
 
 // siblings
 mc = [ type MatriceCreuse ];
-mp = [ type MatricePleine];
+mp = [ type MatricePleine ];
 
 hide [impl,decl] from all except type calcul.refactor.MatricesTest;
 
