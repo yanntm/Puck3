@@ -96,35 +96,36 @@ public class ProblemMarkerManager {
 
 	private static void rename(ASTNode reason) {
 		String reasonName = reason.toString();
-//		System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")");
-//		System.err.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")");
-//		System.err.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")");
-//		System.err.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")");
-//		System.err.println("field access" + "("+ ASTNode.FIELD_ACCESS+")");
-//		System.err.println("type declaration" + "("+ ASTNode.TYPE_DECLARATION+")");
-//		System.err.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")");
-		System.err.println("reasonName = " + reasonName + " / " + "Reason NodeType = " + ASTNode.nodeClassForType(reason.getParent().getNodeType()).getSimpleName());
+		System.out.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")");
+		System.out.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")");
+		System.out.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")");
+		System.out.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")");
+		System.out.println("field access" + "("+ ASTNode.FIELD_ACCESS+")");
+		System.out.println("type declaration" + "("+ ASTNode.TYPE_DECLARATION+")");
+		System.out.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")");
+		System.out.println("simple_type" + "("+ ASTNode.SIMPLE_TYPE+")");
+		System.out.println("reasonName = " + reasonName + " / " + "Reason NodeType = " + ASTNode.nodeClassForType(reason.getParent().getNodeType()).getSimpleName());
 		switch (reason.getParent().getNodeType()) {
 		case ASTNode.COMPILATION_UNIT : 
-			System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")" + reasonName);
+			System.out.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")" + reasonName);
 			break;
 		case ASTNode.METHOD_DECLARATION :
-			System.err.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")" + reasonName);
+			System.out.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")" + reasonName);
 			break;
 		case ASTNode.METHOD_INVOCATION : 
-			System.err.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")" + reasonName);
+			System.out.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")" + reasonName);
 			break;
 		case ASTNode.FIELD_DECLARATION : 
-			System.err.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")" + reasonName);
+			System.out.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")" + reasonName);
 			break;
 		case ASTNode.FIELD_ACCESS :  
-			System.err.println("field access" + "("+ ASTNode.FIELD_ACCESS+")" + reasonName);
+			System.out.println("field access" + "("+ ASTNode.FIELD_ACCESS+")" + reasonName);
 			break;
 		case ASTNode.TYPE_LITERAL :  
-			System.err.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")" + reasonName);
+			System.out.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")" + reasonName);
 			break;
 		case ASTNode.SIMPLE_TYPE :  
-			System.err.println("Simple type" + "("+ ASTNode.SIMPLE_TYPE+")" + reasonName);
+			System.out.println("Simple type" + "("+ ASTNode.SIMPLE_TYPE+")" + reasonName);
 			RefactoringContribution contribution =
 					RefactoringCore.getRefactoringContribution(IJavaRefactorings.RENAME_TYPE);
 			RenameJavaElementDescriptor descriptor =
@@ -132,7 +133,7 @@ public class ProblemMarkerManager {
 			descriptor.setNewName(reasonName+"__CM"); // new name for a Class
 			descriptor.setProject(((CompilationUnit) reason.getRoot()).getJavaElement().getElementName());
 			SimpleType treason = (SimpleType) reason.getParent();
-			System.err.println("treason = " + treason.toString());
+			System.out.println("treason = " + treason.toString());
 			descriptor.setJavaElement(treason.resolveBinding().getJavaElement());
 			RefactoringStatus status = new RefactoringStatus();
 			try {
@@ -153,7 +154,7 @@ public class ProblemMarkerManager {
 			}			
 			break;
 		default :
-			System.err.println("No type?");
+			System.out.println("No type?");
 		}
 	}
 }

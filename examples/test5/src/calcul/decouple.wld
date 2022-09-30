@@ -1,26 +1,13 @@
 import calcul.*
 import calcul.MatricePleine
-<<<<<<< HEAD
 import calcul.MatriceCreuse__CM
-=======
-import calcul.MatriceCreuse
->>>>>>> branch 'master' of https://github.com/yanntm/Puck3.git
 
 lesMatrices = [ type MatriceCreuse__CM, type MatricePleine] ;
 test = [ type Calcul ] ;
-
 lePackage = [ pkg calcul]; 
-<<<<<<< HEAD
-mc = [ type MatriceCreuse__CM ];
 mp = [ type MatricePleine];
-=======
-mc = [ type MatriceCreuse ];
-mp = [ type MatricePleine ];
->>>>>>> branch 'master' of https://github.com/yanntm/Puck3.git
-
-<<<<<<< HEAD
+mc = [ type MatriceCreuse__CM ];
 hide mc from mp;
-=======
 
 //hide mc from mp;
 //hide mp from mc;
@@ -32,5 +19,4 @@ hide mc from mp;
 //}
 
 //hide mc from mp;
-hide mp from mc;
->>>>>>> branch 'master' of https://github.com/yanntm/Puck3.git
+//hide mp from mc;
