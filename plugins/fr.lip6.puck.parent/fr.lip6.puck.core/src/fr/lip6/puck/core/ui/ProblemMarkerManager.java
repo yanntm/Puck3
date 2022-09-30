@@ -92,7 +92,11 @@ public class ProblemMarkerManager {
 				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 				marker.setAttribute(IJavaModelMarker.ID, 666666);
+<<<<<<< HEAD
 				rename(reason);
+=======
+//				rename(reason);
+>>>>>>> branch 'master' of https://github.com/yanntm/Puck3.git
 			}
 		}
 	}

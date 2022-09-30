@@ -1,0 +1,23 @@
+import calcul.*
+import calcul.MatricePleine
+import calcul.MatriceCreuse
+
+lesMatrices = [ type MatriceCreuse, type MatricePleine] ;
+test = [ type Calcul ] ;
+
+lePackage = [ pkg calcul]; 
+mc = [ type MatriceCreuse ];
+mp = [ type MatricePleine ];
+
+
+//hide mc from mp;
+//hide mp from mc;
+//hide mp from all;
+//for (class : package) {
+//	if (class.getName().startsWith("Matrice")) {
+//		hide class from package;
+//	}
+//}
+
+hide mc from all;
+//hide mp from mc;

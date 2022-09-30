@@ -1,4 +1,5 @@
 digraph  G {
+<<<<<<< HEAD
   n0 [shape=folder,label="fr.lip6.puck.core"];
   n1 [shape=box,label="fr.lip6.puck.core.PuckFix"]
   n2 [shape=octagon,label="fr.lip6.puck.core.PuckFix.hasCorrections"];
@@ -6,4 +7,20 @@ digraph  G {
   n0 -> n1 [style=dotted] ;
   n1 -> n2 [style=dotted] ;
   n1 -> n3 [style=dotted] ;
+=======
+  n0 [shape=folder,label="fr.lip6.puck.core.ui"];
+  n1 [shape=box,label="fr.lip6.puck.core.ui.ProblemMarkerManager"]
+  n2 [shape=octagon,label="fr.lip6.puck.core.ui.ProblemMarkerManager.addErrorMarkers"];
+  n3 [shape=octagon,label="fr.lip6.puck.core.ui.ProblemMarkerManager.addViolations"];
+  n4 [shape=octagon,label="fr.lip6.puck.core.ui.ProblemMarkerManager.forEachIntersect"];
+  n5 [shape=octagon,label="fr.lip6.puck.core.ui.ProblemMarkerManager.addMarker"];
+  n2 -> n3  ;
+  n3 -> n4  ;
+  n4 -> n5  ;
+  n0 -> n1 [style=dotted] ;
+  n1 -> n2 [style=dotted] ;
+  n1 -> n3 [style=dotted] ;
+  n1 -> n4 [style=dotted] ;
+  n1 -> n5 [style=dotted] ;
+>>>>>>> branch 'master' of https://github.com/yanntm/Puck3.git
 }
