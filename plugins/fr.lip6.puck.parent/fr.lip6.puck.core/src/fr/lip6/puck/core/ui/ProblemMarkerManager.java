@@ -99,13 +99,13 @@ public class ProblemMarkerManager {
 
 	private static void rename(ASTNode reason) {
 		String reasonName = reason.toString();
-		System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")");
-		System.err.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")");
-		System.err.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")");
-		System.err.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")");
-		System.err.println("field access" + "("+ ASTNode.FIELD_ACCESS+")");
-		System.err.println("type declaration" + "("+ ASTNode.TYPE_DECLARATION+")");
-		System.err.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")");
+//		System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")");
+//		System.err.println("method declaration" + "("+ ASTNode.METHOD_DECLARATION+")");
+//		System.err.println("method invocation" + "("+ ASTNode.METHOD_INVOCATION+")");
+//		System.err.println("field declaration" + "("+ ASTNode.FIELD_DECLARATION+")");
+//		System.err.println("field access" + "("+ ASTNode.FIELD_ACCESS+")");
+//		System.err.println("type declaration" + "("+ ASTNode.TYPE_DECLARATION+")");
+//		System.err.println("type literal" + "("+ ASTNode.TYPE_LITERAL+")");
 		System.err.println("reasonName = " + reasonName + " / " + "Reason NodeType = " + ASTNode.nodeClassForType(reason.getParent().getNodeType()).getSimpleName());
 		switch (reason.getParent().getNodeType()) {
 		case ASTNode.COMPILATION_UNIT : 
