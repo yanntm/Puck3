@@ -97,7 +97,6 @@ public class ProblemMarkerManager {
 		}
 	}
 
-
 	private static void rename(ASTNode reason) {
 		String reasonName = reason.toString();
 		System.err.println("compilation unit" + "("+ ASTNode.COMPILATION_UNIT+")");
@@ -159,38 +158,5 @@ public class ProblemMarkerManager {
 		default :
 			System.err.println("No type?");
 		}
-//		if (reason.getNodeType() == ASTNode.COMPILATION_UNIT) {
-//		if (reason.getNodeType() == ASTNode.COMPILATION_UNIT) {
-//			String reasonName = reason.toString();
-//			IJavaElement ije = ((CompilationUnit) reason).getJavaElement();	
-//			IJavaProject ijp = ije.getJavaProject();
-//			System.err.println("ije = " + ije);
-//			System.err.println("ijp = " + ijp);
-//			RefactoringContribution contribution =
-//					RefactoringCore.getRefactoringContribution(IJavaRefactorings .RENAME_COMPILATION_UNIT);
-//			RenameJavaElementDescriptor descriptor =
-//					(RenameJavaElementDescriptor) contribution.createDescriptor();
-//			descriptor.setProject(ijp.getElementName());
-//			descriptor.setNewName(reasonName+"___ZZZ"); // new name for a Class
-//			descriptor.setJavaElement(ije);
-//			//				RenameRefactoringWizard rrw = new Ren;
-//			RefactoringStatus status = new RefactoringStatus();
-//			try {
-//				Refactoring refactoring = descriptor.createRefactoring(status);
-//
-//				IProgressMonitor monitor = new NullProgressMonitor();
-//				refactoring.checkInitialConditions(monitor);
-//				refactoring.checkFinalConditions(monitor);
-//				Change change = refactoring.createChange(monitor);
-//				change.perform(monitor);
-//
-//			} catch (CoreException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 	}
 }
