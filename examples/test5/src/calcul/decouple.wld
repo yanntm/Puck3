@@ -1,12 +1,11 @@
 import calcul.*
 import calcul.MatricePleine
-import calcul.MatriceCreuse__CM
-
-lesMatrices = [ type MatriceCreuse__CM, type MatricePleine] ;
+import calcul.MatriceCreuse
+lesMatrices = [ type MatriceCreuse, type MatricePleine] ;
 test = [ type Calcul ] ;
 lePackage = [ pkg calcul]; 
 mp = [ type MatricePleine];
-mc = [ type MatriceCreuse__CM ];
+mc = [ type MatriceCreuse ];
 hide mc from mp;
 
 //hide mc from mp;
