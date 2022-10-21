@@ -89,6 +89,7 @@ public class ProblemMarkerManager {
 				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 				marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 				marker.setAttribute(IJavaModelMarker.ID, 666666);
+				marker.setAttribute(message, false);
 //				rename(reason);
 			}
 		}
