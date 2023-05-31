@@ -1,5 +1,7 @@
 package fr.lip6.puck.parse;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
@@ -37,6 +39,8 @@ public final class GraphBuilder  {
 	public static PuckGraph collectGraph(List<CompilationUnit> parsedCu) {
 		// The nodes we will collect in a first pass.
 		DependencyNodes nodes = new DependencyNodes();		
+		// Sort parsedCu (JDT version)
+		Collections.sort(parsedCu, Comparator.comparing(unit -> unit.getTypeRoot().getPath().toString()));
 
 		// First pass with a visitor.
 		// This visitor is not stateful so we used an anonymous class.
